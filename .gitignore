@@ -1,3 +1,4 @@
 */node_modules/
 *.csv
 CarDB-API/src/*.json
+swagger.js

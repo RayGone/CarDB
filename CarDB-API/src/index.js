@@ -1,18 +1,20 @@
 const express = require('express');
-const {init, collectionName} = require("./db-init.js");
+const {connect, initData} = require("./db-init.js");
 
-const port = 3000;
-var db_context;
+const routes = require("./router.js");
 
+const PORT = 3000;
 const app = express();
+
+connect(); // Initialize Firebase
+initData(); // Initialize data
+
 app.use(express.json());
+app.use("/api/", routes);
 
-init();
+// const { swaggerDocs } = require("./swagger");
 
-app.get('/', (req, res) => {
-    res.send('Hello World!');
-});
-
-app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+    // swaggerDocs(app, PORT);
 });

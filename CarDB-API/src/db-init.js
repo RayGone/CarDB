@@ -9,17 +9,22 @@ const collectionName = "cars";
 //     credential: applicationDefault(),
 //     projectId: '<FIREBASE_PROJECT_ID>',
 //   });
-console.log("Initializing database...");
-    
-// Initialize Firebase
-initializeApp({
-    credential: cert(serviceAccount)
-});
-const db_context = getFirestore();
+function connect(){
+    console.log("Connecting to database...");
+    // Initialize Firebase
+    initializeApp({
+        credential: cert(serviceAccount)
+    });
+    console.log("Database connected successfully!");
 
-console.log("Database initialized successfully!");
+}
 
-async function init(){
+function getDbContext(){
+    return getFirestore();
+}
+
+async function initData(){
+    const db_context = getDbContext();
     const snapshot = await db_context.collection(collectionName).limit(1).get();
     if(snapshot.empty){ 
         console.log("Initializing data...");
@@ -37,4 +42,4 @@ async function init(){
     return snapshot;
 }
 
-module.exports = { init, collectionName, db_context };
+module.exports = {connect, initData, getDbContext, collectionName};
