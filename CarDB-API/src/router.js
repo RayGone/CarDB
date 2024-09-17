@@ -9,5 +9,6 @@ const controller = require("./controller");
 *     summary: Get the main page
 */
 router.get("/", controller.getCars);
+router.get("/total", controller.getTotalCars);
 
 module.exports = router;
