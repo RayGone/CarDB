@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit, PLATFORM_ID, ViewChild } from '@angular/core';
-import { Car, columnDef, DataFilterModel, baseUrl, FilterModel } from '../model';
+import { Car, columnDef, DataFilterModel, baseUrl, FilterModel, CarResponse } from '../model';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { FormControl } from '@angular/forms';
@@ -60,6 +60,9 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
       this.filterModel = this.getSavedFilters();
+      this.page = this.filterModel.page;
+      this.pageSize = this.filterModel.limit;
+
       this.searchControl.valueChanges.pipe(sampleTime(200)).subscribe((value: string) => {
         //Local Search
         if(value == "") this.dataSource.data = this.data;
@@ -68,6 +71,7 @@ export class HomeComponent implements OnInit {
         let filtered = this.data.filter((row) => row.name.toLowerCase().includes(search_string) || row.origin.toLowerCase().includes(search_string));
         this.dataSource.data = filtered
 
+        this.fetch();
         this.trackFilters(this.filterModel);
       });
 
@@ -131,15 +135,11 @@ export class HomeComponent implements OnInit {
   }
 
   fetch(): void {
-    this.http.post<Car[]>(this.filterUrl, this.filterModel).subscribe(data => {
-        this.data = data;
-        this.dataSource.data = data;
+    this.http.post<CarResponse>(this.filterUrl, this.filterModel).subscribe(data => {
+        this.data = data.cars;
+        this.dataSource.data = data.cars;
 
-        if(this.filterModel.search != ""){
-          let search_string = this.filterModel.search;
-          let filtered = this.data.filter((row) => row.name.toLowerCase().includes(search_string) || row.origin.toLowerCase().includes(search_string));
-          this.dataSource.data = filtered
-        }
+        this.total = data.total;
     });
   }
 
@@ -151,7 +151,7 @@ export class HomeComponent implements OnInit {
     });
 
     AddCarDialogComponent.afterSubmit.subscribe((success) => {
-      if(success){ this.fetchDataCount(); this.fetch(); }
+      if(success){ this.fetch(); }
     });
   }
 
@@ -163,7 +163,7 @@ export class HomeComponent implements OnInit {
     });
 
     EditCarDialogComponent.afterSubmit.subscribe((success) => {
-    if(success){ this.fetchDataCount(); this.fetch(); }
+    if(success){ this.fetch(); }
   });
 
   }
@@ -173,7 +173,6 @@ export class HomeComponent implements OnInit {
     this.snackBar.open("Deleting Car "+ name + ".", "Close", {duration: 2000});
     this.http.delete(this.deleteUrl + "/" + car.id).subscribe((data: any) => {
       this.snackBar.open(name + " Car Deleted!!", "Close", {duration: 2000});
-      this.fetchDataCount();
       this.fetch();
     });
   }
