@@ -1,14 +1,15 @@
 import { Component, Inject, OnInit, PLATFORM_ID, ViewChild } from '@angular/core';
-import { Car, columnDef, DataFilterModel, baseUrl } from '../model';
+import { Car, columnDef, DataFilterModel, baseUrl, FilterModel } from '../model';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { FormControl } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { sampleTime } from 'rxjs';
+import { sampleTime, take } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { AddCarDialogComponent } from './add-car-dialog/add-car-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { EditCarDialogComponent } from './edit-car-dialog/edit-car-dialog.component';
+import { FilterDialogComponent } from './filter-dialog/filter-dialog.component';
 
 @Component({
   selector: 'app-home',
@@ -58,6 +59,7 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit(): void {
+      this.filterModel = this.getSavedFilters();
       this.searchControl.valueChanges.pipe(sampleTime(200)).subscribe((value: string) => {
         //Local Search
         if(value == "") this.dataSource.data = this.data;
@@ -65,10 +67,31 @@ export class HomeComponent implements OnInit {
         this.filterModel.search = search_string;
         let filtered = this.data.filter((row) => row.name.toLowerCase().includes(search_string) || row.origin.toLowerCase().includes(search_string));
         this.dataSource.data = filtered
+
+        this.trackFilters(this.filterModel);
       });
 
       if(this.filterModel.search != "") this.searchControl.setValue(this.filterModel.search);
       this.fetch();
+  }
+
+  public addFilter(): void {
+    this.dialogRef.open(FilterDialogComponent, {
+      width: '500px',
+      height: '400px'
+    });
+
+    FilterDialogComponent.onFilterAdd.pipe(take(1)).subscribe((filter: FilterModel) => {
+      this.filterModel.filter.push(filter);
+      this.trackFilters(this.filterModel);
+      this.fetch();
+    });
+  }
+
+  public deleteFilter(filter: FilterModel): void{
+    this.filterModel.filter = this.filterModel.filter.filter((f) => f != filter);
+    this.trackFilters(this.filterModel);
+    this.fetch();
   }
 
   public onPageChange(event: any): void {
@@ -76,8 +99,30 @@ export class HomeComponent implements OnInit {
       this.filterModel.page = event.pageIndex;
       this.filterModel.limit = event.pageSize;
 
+      this.trackFilters(this.filterModel);
       this.fetch();
   }
+
+  //==============================
+  // persistant filters===========
+  //==============================
+  public trackFilters(filter: DataFilterModel): void{
+    localStorage.setItem("filter", JSON.stringify(filter));
+  }
+
+  public getSavedFilters(): DataFilterModel{
+    const filter = localStorage.getItem("filter");
+    if(filter){
+      return JSON.parse(filter);
+    }
+
+    return this.filterModel
+  }
+
+
+  //==============================
+  // Data Fetches================
+  //============================
 
   fetchDataCount():void{
     this.http.get(this.totalCountUrl).subscribe((data: any) => {

@@ -55,11 +55,23 @@
         <tr mat-row *matRowDef="let row; columns: headerDef;"></tr>
       </table>
     </section>
+
     <aside>
-      <h2>Filters <button mat-icon-button style="float: right"><mat-icon>add</mat-icon></button></h2>
+      <h2>Filters <button mat-raised-button style="float: right" (click)="addFilter()"><mat-icon>add</mat-icon> Add</button></h2>
       <hr>
       <div class="filter-body">
-
+        <ng-container *ngFor="let filter of filterModel.filter;">
+          <div class="flexRow flexJustifySpaceBetween flexAlignCenter">
+            <div class="filter-desc">
+              <strong>{{ filter.field | titlecase}}</strong><br>
+              {{ filter.ops | opName}}<br>
+              <strong>{{ filter.value }}</strong>
+            </div>
+            <button mat-icon-button color="warn" (click)="deleteFilter(filter)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </ng-container>
       </div>
     </aside>
   </div>

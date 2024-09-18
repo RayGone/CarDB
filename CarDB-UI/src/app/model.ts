@@ -66,6 +66,34 @@ export const columnDef = [
   },
 ]
 
+export const filterAttributes = columnDef.filter((col) => col.key != 'id').filter( col => col.key != 'name').filter(col=> col.key != 'origin');
+export const filterOps = [
+  {
+    key: '==',
+    value: 'Equals'
+  },
+  {
+    key: '!=',
+    value: 'Not Equals'
+  },
+  {
+    key: '>',
+    value: 'Greater Than'
+  },
+  {
+    key: '<',
+    value: 'Less Than'
+  },
+  {
+    key: '>=',
+    value: 'Greater Than or Equals'
+  },
+  {
+    key: '<=>',
+    value: 'Less Than or Equals'
+  },
+];
+
 export interface FilterModel{
   field: string;
   ops: string;
