@@ -16,6 +16,7 @@ export class HomeComponent implements OnInit {
   readonly pageSizes = [20, 50, 100];
   public total: number = 0;
   public page: number = 0;
+  public pageSize: number = 20;
 
   // Table Defs
   public readonly columnDef = columnDef;
@@ -38,8 +39,6 @@ export class HomeComponent implements OnInit {
   public readonly baseUrl = "http://localhost:3000/api"
   public readonly filterUrl = this.baseUrl + "/filterSearch";
 
-  search_string = '';
-
   @ViewChild(MatSort)
   public set matSort(sort: MatSort) {
       this.dataSource.sort = sort;
@@ -52,16 +51,17 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-      this.http.get<Car[]>(this.baseUrl).subscribe(data => {
-          this.data = data;
-          this.dataSource.data = data;
+      this.searchControl.valueChanges.pipe(sampleTime(200)).subscribe((value: string) => {
+        //Local Search
+        if(value == "") this.dataSource.data = this.data;
+        let search_string = value.toLowerCase();
+        this.filterModel.search = search_string;
+        let filtered = this.data.filter((row) => row.name.toLowerCase().includes(search_string) || row.origin.toLowerCase().includes(search_string));
+        this.dataSource.data = filtered
       });
 
-      this.searchControl.valueChanges.pipe(sampleTime(200)).subscribe(value => {
-        // localStorage.setItem('search_string', value);
-        // this.search_string = value;
-
-      });
+      if(this.filterModel.search != "") this.searchControl.setValue(this.filterModel.search);
+      this.fetch();
   }
 
   public onPageChange(event: any): void {
@@ -69,9 +69,19 @@ export class HomeComponent implements OnInit {
       this.filterModel.page = event.pageIndex;
       this.filterModel.limit = event.pageSize;
 
-      this.http.post<Car[]>(this.filterUrl, this.filterModel).subscribe(data => {
-          this.data = data;
-          this.dataSource.data = data;
-      });
+      this.fetch();
+  }
+
+  fetch(): void {
+    this.http.post<Car[]>(this.filterUrl, this.filterModel).subscribe(data => {
+        this.data = data;
+        this.dataSource.data = data;
+
+        if(this.filterModel.search != ""){
+          let search_string = this.filterModel.search;
+          let filtered = this.data.filter((row) => row.name.toLowerCase().includes(search_string) || row.origin.toLowerCase().includes(search_string));
+          this.dataSource.data = filtered
+        }
+    });
   }
 }

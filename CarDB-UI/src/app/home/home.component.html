@@ -1,12 +1,19 @@
 <div class="container">
   <header>
-    <h1>CarDB</h1>
-      <input
-          matInput
-          placeholder="Search... [Name, Origin]"
-          [formControl]="searchControl"
-          [value]="search_string"
-          class="form-control" />
+    <h1><img class="logo" src="/assets/car.jpg" /> &nbsp;&nbsp; <span>CarDB</span></h1>
+    <div class="tab-buttons">
+      <mat-form-field class="search">
+        <input
+            matInput
+            color="primary"
+            placeholder="Search... [Name, Origin]"
+            [formControl]="searchControl"
+            class="form-control" />
+      </mat-form-field>
+
+      <button mat-raised-button color="primary">Download <mat-icon>download</mat-icon></button>
+      &nbsp;&nbsp;
+    </div>
   </header>
 
   <div class="body">
@@ -33,11 +40,15 @@
     <aside>
       <h2>Filters <button mat-icon-button style="float: right"><mat-icon>add</mat-icon></button></h2>
       <hr>
+      <div class="filter-body">
+
+      </div>
     </aside>
   </div>
   <footer>
     <mat-paginator
       [pageSizeOptions]="pageSizes"
+      [pageSize]="pageSize"
       [length]="total"
       [pageIndex]="page"
       (page)="onPageChange($event)"></mat-paginator>
