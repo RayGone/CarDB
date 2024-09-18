@@ -11,6 +11,11 @@ export interface Car {
   displacement: number;
 }
 
+export interface CarResponse {
+  cars: Car[];
+  total: number;
+}
+
 export const baseUrl = "http://localhost:3000/api";
 
 export const columnDef = [
