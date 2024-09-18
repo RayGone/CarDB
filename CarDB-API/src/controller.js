@@ -102,26 +102,35 @@ addCars = (req, res) => {
 
 editCars = (req, res) => {
     const db_context = getDbContext();
-    var data = req.body
-    db_context.collection(collectionName).count().get().then(snapshot => {
-        count = snapshot.data().count + 1;
-        data["id"] = count.toString();
+    const id = parseInt(req.params.id);
+    const data = req.body
 
-        db_context.collection(collectionName).add(data).then(ref => {
-            res.json({ id: ref.id });
-        }).catch(err => {
-            console.error(err);
-            res.status(500).send("Internal Server Error");
-        });
+    // Though the doc Id and object Id are same, here is just a failsafe procedure.
+    db_context.collection(collectionName).where("id", "==", id).get().then(snapshot => {
+        if(snapshot.size == 0){
+            res.status(404).send("Not Found");
+            return;
+        }
+
+        const doc_id = snapshot.docs[0].id;
+        db_context.collection(collectionName).doc(doc_id).set(data)
+            .then(ref => {
+                res.json({ id: ref.id });
+            }).catch(err => {
+                console.error(err);
+                res.status(500).send("Internal Server Error 1");
+            });
     }).catch(err => {
         console.error(err);
-        res.status(500).send("Internal Server Error");
+        res.status(500).send("Internal Server Error 2");
     });
 };
 
 deleteCars = (req, res) => {
     const id = parseInt(req.params.id);
     const db_context = getDbContext();
+
+    // Though the doc Id and object Id are same, here is just a failsafe procedure.
     db_context.collection(collectionName).where("id", "==", id).get().then(snapshot => {
         if(snapshot.size == 0){
             res.status(404).send("Not Found");
@@ -132,11 +141,11 @@ deleteCars = (req, res) => {
             res.json({ id: id });
         }).catch(err => {
             console.error(err);
-            res.status(500).send("Internal Server Error");
+            res.status(500).send("Internal Server Error 1");
         });
     }).catch(err => {
         console.error(err);
-        res.status(500).send("Internal Server Error");
+        res.status(500).send("Internal Server Error 2");
     });;
 
     

@@ -10,6 +10,7 @@ const controller = require("./controller");
 */
 router.get("/", controller.getCars);
 router.post("/add", controller.addCars);
+router.patch("/edit/:id", controller.editCars);
 router.delete("/delete/:id", controller.deleteCars);
 router.post("/filterSearch", controller.getCars);
 router.get("/search", controller.searchCars);
