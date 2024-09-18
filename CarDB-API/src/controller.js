@@ -63,4 +63,84 @@ getTotalCars = (req, res) => {
     });
 };
 
-module.exports = { getCars, searchCars, getTotalCars };
+download = (req, res) => {
+    db_context.collection(collectionName).get().then(snapshot => {
+        let cars = [];
+        snapshot.forEach(doc => {
+            cars.push(doc.data());
+        });
+    });
+}
+
+addCars = (req, res) => {
+    const db_context = getDbContext();
+    db_context.collection(collectionName).orderBy(default_orderBy, 'desc').limit(1).get().then(snapshot => {
+        doc_id = 0;
+        snapshot.forEach(doc => {
+            doc_id = doc.id;
+        });
+        doc_id = parseInt(doc_id) + 1;
+
+        var data = {
+            ...req.body,
+            id: doc_id
+        }
+        console.log({data});
+
+        db_context.collection(collectionName).doc(doc_id.toString()).set(data)
+            .then(ref => {
+                res.json({ id: ref.id });
+            }).catch(err => {
+                console.error(err);
+                res.status(500).send("Internal Server Error");
+            });
+    }).catch(err => {
+        console.error(err);
+        res.status(500).send("Internal Server Error");
+    });
+}
+
+editCars = (req, res) => {
+    const db_context = getDbContext();
+    var data = req.body
+    db_context.collection(collectionName).count().get().then(snapshot => {
+        count = snapshot.data().count + 1;
+        data["id"] = count.toString();
+
+        db_context.collection(collectionName).add(data).then(ref => {
+            res.json({ id: ref.id });
+        }).catch(err => {
+            console.error(err);
+            res.status(500).send("Internal Server Error");
+        });
+    }).catch(err => {
+        console.error(err);
+        res.status(500).send("Internal Server Error");
+    });
+};
+
+deleteCars = (req, res) => {
+    const id = parseInt(req.params.id);
+    const db_context = getDbContext();
+    db_context.collection(collectionName).where("id", "==", id).get().then(snapshot => {
+        if(snapshot.size == 0){
+            res.status(404).send("Not Found");
+            return;
+        }
+        const doc_id = snapshot.docs[0].id;
+        db_context.collection(collectionName).doc(doc_id).delete().then(ref => {
+            res.json({ id: id });
+        }).catch(err => {
+            console.error(err);
+            res.status(500).send("Internal Server Error");
+        });
+    }).catch(err => {
+        console.error(err);
+        res.status(500).send("Internal Server Error");
+    });;
+
+    
+
+}
+
+module.exports = { getCars, searchCars, getTotalCars, addCars, editCars, deleteCars, download };
