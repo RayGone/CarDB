@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const {connect, initData} = require("./db-init.js");
 
 const routes = require("./router.js");
@@ -9,6 +10,7 @@ const app = express();
 connect(); // Initialize Firebase
 initData(); // Initialize data
 
+app.use(cors());
 app.use(express.json());
 app.use("/api/", routes);
 
