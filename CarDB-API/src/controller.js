@@ -80,7 +80,7 @@ getTotalCars = (req, res) => {
  */
 download = (req, res) => {
     const db_context = getDbContext();
-    db_context.collection(collectionName).limit(5).get().then(snapshot => {
+    db_context.collection(collectionName).get().then(snapshot => {
         ftype = "json"
         if(req.params.type) ftype = req.params.type
         else if(req.query.type) ftype = req.query.type

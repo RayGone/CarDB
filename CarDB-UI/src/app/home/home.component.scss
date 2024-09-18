@@ -1,10 +1,14 @@
 header{
-    background-color: #f8f9fa;
+    background-color: #eff3f5;
     padding-left: 5px 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: sticky;
+    top: 0;
+    height: 80px;
+    z-index: 1000;
 }
 
 header > h1{
@@ -47,6 +51,14 @@ header > h1{
   width: 100%;
 }
 
+th{
+  background-color: #f8f9fa;
+  box-shadow: 0 0 10px rgba(45, 48, 71, 0.8);
+}
+td{
+  border-right: 1px solid #95a6b811;
+}
+
 section{
   width: 75vw;
   overflow: auto;
@@ -68,4 +80,13 @@ aside{
   flex-direction: column;
   justify-content: start;
   margin-top: 5px;
+}
+
+footer{
+  background-color: #f8f9fa;
+  padding: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  bottom: 0;
+  z-index: 1000;
 }
