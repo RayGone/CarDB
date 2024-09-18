@@ -14,6 +14,8 @@ import { provideHttpClient, withFetch } from '@angular/common/http';
 import { MatSortModule } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 
 @NgModule({
@@ -31,6 +33,8 @@ import { MatInputModule } from '@angular/material/input';
     MatPaginator,
     MatSortModule,
     MatInputModule,
+    MatButtonModule,
+    MatIconModule,
   ],
   providers: [
     provideClientHydration(),

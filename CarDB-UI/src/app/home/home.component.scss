@@ -17,10 +17,30 @@ header > h1{
 }
 
 .container{
-  height: 100vh;
+  height: 100%;
 }
 
-table{
+.body{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  // height: 100%;
   overflow: auto;
-  position: relative;
+  width: 100%;
+}
+
+section{
+  width: 75vw;
+  overflow: auto;
+  padding: 2px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin: 5px
+}
+
+aside{
+  width: 20vw;
+  padding: 5px;
+  height: 60vh;
+  overflow: auto;
+  margin: 5px;
 }

@@ -36,6 +36,7 @@ export class HomeComponent implements OnInit {
   };
 
   public readonly baseUrl = "http://localhost:3000/api"
+  public readonly filterUrl = this.baseUrl + "/filterSearch";
 
   search_string = '';
 
@@ -64,11 +65,13 @@ export class HomeComponent implements OnInit {
   }
 
   public onPageChange(event: any): void {
-    console.log({event});
-      // this.page = event.pageIndex;
-      // this.http.get<Car[]>(this.baseUrl + "?page=" + this.page).subscribe(data => {
-      //     this.data = data;
-      //     this.dataSource.data = data;
-      // });
+      this.page = event.pageIndex;
+      this.filterModel.page = event.pageIndex;
+      this.filterModel.limit = event.pageSize;
+
+      this.http.post<Car[]>(this.filterUrl, this.filterModel).subscribe(data => {
+          this.data = data;
+          this.dataSource.data = data;
+      });
   }
 }

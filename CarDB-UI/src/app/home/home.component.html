@@ -8,27 +8,38 @@
           [value]="search_string"
           class="form-control" />
   </header>
-  <table #table mat-table matSort [dataSource]="dataSource" *ngIf="data.length">
-    <ng-container
-      *ngFor="let column of columnDef;"
-      [matColumnDef]="column.key">
-      <th mat-header-cell *matHeaderCellDef>
-        <span mat-sort-header>{{ column.header }}</span>
-      </th>
-      <td mat-cell *matCellDef="let element">
-        <ng-container *ngIf="column.type == 'string'; else number">
-          <span *ngIf="column.key == 'name'"> {{ element[column.key] | titlecase }}</span>
-          <span *ngIf="column.key == 'origin';"> {{ element[column.key] | uppercase }}</span>
+
+  <div class="body">
+    <section>
+      <table #table mat-table matSort [dataSource]="dataSource" *ngIf="data.length">
+        <ng-container
+          *ngFor="let column of columnDef;"
+          [matColumnDef]="column.key">
+          <th mat-header-cell *matHeaderCellDef>
+            <span mat-sort-header>{{ column.header }}</span>
+          </th>
+          <td mat-cell *matCellDef="let element">
+            <ng-container *ngIf="column.type == 'string'; else number">
+              <span *ngIf="column.key == 'name'"> {{ element[column.key] | titlecase }}</span>
+              <span *ngIf="column.key == 'origin';"> {{ element[column.key] | uppercase }}</span>
+            </ng-container>
+            <ng-template #number>{{ element[column.key] }}</ng-template>
+           </td>
         </ng-container>
-        <ng-template #number>{{ element[column.key] }}</ng-template>
-       </td>
-    </ng-container>
-    <tr mat-header-row *matHeaderRowDef="headerDef;"></tr>
-    <tr mat-row *matRowDef="let row; columns: headerDef;"></tr>
-  </table>
-  <mat-paginator
-    [pageSizeOptions]="pageSizes"
-    [length]="total"
-    [pageIndex]="page"
-    (page)="onPageChange($event)"></mat-paginator>
+        <tr mat-header-row *matHeaderRowDef="headerDef;"></tr>
+        <tr mat-row *matRowDef="let row; columns: headerDef;"></tr>
+      </table>
+    </section>
+    <aside>
+      <h2>Filters <button mat-icon-button style="float: right"><mat-icon>add</mat-icon></button></h2>
+      <hr>
+    </aside>
+  </div>
+  <footer>
+    <mat-paginator
+      [pageSizeOptions]="pageSizes"
+      [length]="total"
+      [pageIndex]="page"
+      (page)="onPageChange($event)"></mat-paginator>
+  </footer>
 </div>
