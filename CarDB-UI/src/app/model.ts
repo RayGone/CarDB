@@ -89,7 +89,7 @@ export const filterOps = [
     value: 'Greater Than or Equals'
   },
   {
-    key: '<=>',
+    key: '<=',
     value: 'Less Than or Equals'
   },
 ];
