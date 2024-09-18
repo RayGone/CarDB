@@ -21,6 +21,8 @@ import { AddCarDialogComponent } from './home/add-car-dialog/add-car-dialog.comp
 import { MatCardModule } from '@angular/material/card';
 import { EditCarDialogComponent } from './home/edit-car-dialog/edit-car-dialog.component';
 import { FilterDialogComponent } from './home/filter-dialog/filter-dialog.component';
+import { MatSelectModule } from '@angular/material/select';
+import { OpNamePipe } from './op-name/op-name.pipe';
 
 
 @NgModule({
@@ -29,7 +31,8 @@ import { FilterDialogComponent } from './home/filter-dialog/filter-dialog.compon
     HomeComponent,
     AddCarDialogComponent,
     EditCarDialogComponent,
-    FilterDialogComponent
+    FilterDialogComponent,
+    OpNamePipe
   ],
   imports: [
     BrowserModule,
@@ -45,6 +48,8 @@ import { FilterDialogComponent } from './home/filter-dialog/filter-dialog.compon
     MatIconModule,
     MatDialogModule,
     MatCardModule,
+    MatSelectModule,
+    MatInputModule
   ],
   providers: [
     provideClientHydration(),
