@@ -33,6 +33,11 @@ header > h1{
   height: 100%;
 }
 
+.flexRow{
+  display: flex;
+  flex-direction: row;;
+}
+
 .body{
   display: flex;
   flex-direction: row;

@@ -16,12 +16,16 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDialogModule } from '@angular/material/dialog';
+import { AddCarDialogComponent } from './home/add-car-dialog/add-car-dialog.component';
+import { MatCardModule } from '@angular/material/card';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent
+    HomeComponent,
+    AddCarDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -35,6 +39,8 @@ import { MatIconModule } from '@angular/material/icon';
     MatInputModule,
     MatButtonModule,
     MatIconModule,
+    MatDialogModule,
+    MatCardModule,
   ],
   providers: [
     provideClientHydration(),

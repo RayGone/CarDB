@@ -1,0 +1,44 @@
+<mat-card appearance="outlined">
+  <mat-card-header>
+    <h1>Add Car</h1>
+  </mat-card-header>
+
+  <mat-card-content>
+    <form class="form" [formGroup]="addForm">
+      <mat-form-field class="input">
+        <input matInput placeholder="Name" formControlName="name" />
+      </mat-form-field>
+      <mat-form-field class="input">
+        <input matInput placeholder="Origin" formControlName="origin" />
+      </mat-form-field>
+      <mat-form-field class="input">
+        <input matInput placeholder="Horsepower" type="number" formControlName="horsepower" />
+      </mat-form-field>
+      <mat-form-field class="input">
+        <input matInput placeholder="Weight" type="number" formControlName="weight" />
+      </mat-form-field>
+      <mat-form-field class="input">
+        <input matInput placeholder="MPG" type="number" formControlName="mpg" />
+      </mat-form-field>
+      <mat-form-field class="input">
+        <input matInput placeholder="Model Year" type="number" formControlName="model_year" />
+      </mat-form-field>
+      <mat-form-field class="input">
+        <input matInput placeholder="Cylinders" type="number" formControlName="cylinders" />
+      </mat-form-field>
+      <mat-form-field class="input">
+        <input matInput placeholder="Displacement"  type="number" formControlName="displacement" />
+      </mat-form-field>
+      <mat-form-field class="input">
+        <input matInput placeholder="Acceleration"  type="number" formControlName="acceleration" />
+      </mat-form-field>
+    </form>
+  </mat-card-content>
+
+
+  <mat-card-footer class="footer">
+    <button mat-raised-button color="primary" type="submit" (click)="submit()">Add</button>
+    <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+    <button mat-raised-button color="warn" (click)="close()">Cancel</button>
+  </mat-card-footer>
+</mat-card>
