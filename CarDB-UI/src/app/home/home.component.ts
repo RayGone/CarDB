@@ -41,6 +41,9 @@ export class HomeComponent implements OnInit {
   };
 
   public readonly filterUrl = baseUrl + "/filterSearch";
+  public readonly downloadUrl = baseUrl + "/download/csv";
+  public readonly totalCountUrl = baseUrl + "/total";
+  public readonly deleteUrl = baseUrl + "/delete";
 
   @ViewChild(MatSort)
   public set matSort(sort: MatSort) {
@@ -77,7 +80,7 @@ export class HomeComponent implements OnInit {
   }
 
   fetchDataCount():void{
-    this.http.get(baseUrl + "/total").subscribe((data: any) => {
+    this.http.get(this.totalCountUrl).subscribe((data: any) => {
       this.total = data.total;
     });
   }
@@ -123,7 +126,7 @@ export class HomeComponent implements OnInit {
   public deleteCar(car: Car): void {
     let name = car.name.toUpperCase()
     this.snackBar.open("Deleting Car "+ name + ".", "Close", {duration: 2000});
-    this.http.delete(baseUrl + "/delete/" + car.id).subscribe((data: any) => {
+    this.http.delete(this.deleteUrl + "/" + car.id).subscribe((data: any) => {
       this.snackBar.open(name + " Car Deleted!!", "Close", {duration: 2000});
       this.fetchDataCount();
       this.fetch();

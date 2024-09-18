@@ -20,6 +20,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { AddCarDialogComponent } from './home/add-car-dialog/add-car-dialog.component';
 import { MatCardModule } from '@angular/material/card';
 import { EditCarDialogComponent } from './home/edit-car-dialog/edit-car-dialog.component';
+import { FilterDialogComponent } from './home/filter-dialog/filter-dialog.component';
 
 
 @NgModule({
@@ -27,7 +28,8 @@ import { EditCarDialogComponent } from './home/edit-car-dialog/edit-car-dialog.c
     AppComponent,
     HomeComponent,
     AddCarDialogComponent,
-    EditCarDialogComponent
+    EditCarDialogComponent,
+    FilterDialogComponent
   ],
   imports: [
     BrowserModule,

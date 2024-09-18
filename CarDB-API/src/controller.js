@@ -1,10 +1,17 @@
 const {connect, collectionName, getDbContext} = require("./db-init.js");
+const fs = require('fs');
+const converter = require('json-2-csv');
+// const csv = await converter.json2csv(data, options);
 
 const default_limit = 20;
 const default_page = 0;
 const default_orderBy = "id";
 const default_order = "asc";
 
+/*
+ * =================================================================================================
+ * Get Cars Controller
+ */
 getCars = (req, res) => {
     const db_context = getDbContext();
     collection = db_context.collection(collectionName);
@@ -55,6 +62,10 @@ getCars = (req, res) => {
 
 searchCars = (req, res) => {res.send("searchCars")};
 
+/*
+ * =================================================================================================
+ * Get Cars Count Controller
+ */
 getTotalCars = (req, res) => {
     const db_context = getDbContext();
     db_context.collection(collectionName).count().get().then(snapshot => {
@@ -63,15 +74,70 @@ getTotalCars = (req, res) => {
     });
 };
 
+/*
+ * =================================================================================================
+ * Download Cars Controller
+ */
 download = (req, res) => {
+    const db_context = getDbContext();
     db_context.collection(collectionName).get().then(snapshot => {
+        ftype = "json"
+        if(req.params.type) ftype = req.params.type
+        else if(req.query.type) ftype = req.query.type
+       
         let cars = [];
         snapshot.forEach(doc => {
             cars.push(doc.data());
         });
+
+        data = "";
+        filepath = "";
+        if(ftype == "csv"){
+            data = converter.json2csv(cars)
+            filepath = 'cars.csv';
+        }else{
+            // ftype == "json"
+            data = JSON.stringify(cars, null, 2);
+            filepath = 'cars.json';
+        }
+
+        if(data == "" || filepath == ""){
+            res.status(500).send("Internal Server Error 1");
+            return;
+        } else{   
+            try {
+                // Write JSON string to a file
+                fs.writeFile(filepath, data, (err) => {
+                    if (err) {
+                        return res.status(500).send('Error writing file');
+                    }
+                
+                    // Send the file as a download
+                    res.download(filepath, filepath, (err) => {
+                        if (err) {
+                            return res.status(500).send('Error downloading file');
+                        }
+              
+                        // Optionally, delete the file after sending it
+                        fs.unlink(filepath, (err) => {
+                            if (err) {
+                                console.error('Error deleting file:', err);
+                            }
+                        });
+                    });
+                });
+            } catch (err) {
+                console.error('Error writing file:', err);
+                res.status(500).send("Internal Server Error 2");
+            }
+        }
     });
 }
 
+/*
+ * =================================================================================================
+ * Add Cars Controller
+ */
 addCars = (req, res) => {
     const db_context = getDbContext();
     db_context.collection(collectionName).orderBy(default_orderBy, 'desc').limit(1).get().then(snapshot => {
@@ -100,6 +166,10 @@ addCars = (req, res) => {
     });
 }
 
+/*
+ * =================================================================================================
+ * Edit Cars Controller
+ */
 editCars = (req, res) => {
     const db_context = getDbContext();
     const id = parseInt(req.params.id);
@@ -126,6 +196,10 @@ editCars = (req, res) => {
     });
 };
 
+/*
+ * =================================================================================================
+ * Delete Cars Controller
+ */
 deleteCars = (req, res) => {
     const id = parseInt(req.params.id);
     const db_context = getDbContext();

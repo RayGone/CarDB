@@ -16,4 +16,7 @@ router.post("/filterSearch", controller.getCars);
 router.get("/search", controller.searchCars);
 router.get("/total", controller.getTotalCars);
 
+router.get("/download/", controller.download);
+router.get("/download/:type", controller.download);
+
 module.exports = router;
