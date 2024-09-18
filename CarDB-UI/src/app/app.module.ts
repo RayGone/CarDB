@@ -19,13 +19,15 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule } from '@angular/material/dialog';
 import { AddCarDialogComponent } from './home/add-car-dialog/add-car-dialog.component';
 import { MatCardModule } from '@angular/material/card';
+import { EditCarDialogComponent } from './home/edit-car-dialog/edit-car-dialog.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    AddCarDialogComponent
+    AddCarDialogComponent,
+    EditCarDialogComponent
   ],
   imports: [
     BrowserModule,

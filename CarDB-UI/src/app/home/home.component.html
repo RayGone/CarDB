@@ -41,7 +41,7 @@
           <th mat-header-cell *matHeaderCellDef> Actions </th>
           <td mat-cell *matCellDef="let car">
             <div class="flexRow">
-              <button mat-icon-button>
+              <button mat-icon-button (click)="editCar(car)">
                 <mat-icon>edit</mat-icon>
               </button>
               <button mat-icon-button (click)="deleteCar(car)">

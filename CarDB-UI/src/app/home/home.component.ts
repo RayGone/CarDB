@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit, PLATFORM_ID, ViewChild } from '@angular/core';
-import { Car, columnDef, DataFilterModel } from '../model';
+import { Car, columnDef, DataFilterModel, baseUrl } from '../model';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { FormControl } from '@angular/forms';
@@ -8,6 +8,7 @@ import { sampleTime } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { AddCarDialogComponent } from './add-car-dialog/add-car-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { EditCarDialogComponent } from './edit-car-dialog/edit-car-dialog.component';
 
 @Component({
   selector: 'app-home',
@@ -39,8 +40,7 @@ export class HomeComponent implements OnInit {
     page: 0
   };
 
-  public readonly baseUrl = "http://localhost:3000/api"
-  public readonly filterUrl = this.baseUrl + "/filterSearch";
+  public readonly filterUrl = baseUrl + "/filterSearch";
 
   @ViewChild(MatSort)
   public set matSort(sort: MatSort) {
@@ -77,7 +77,7 @@ export class HomeComponent implements OnInit {
   }
 
   fetchDataCount():void{
-    this.http.get(this.baseUrl + "/total").subscribe((data: any) => {
+    this.http.get(baseUrl + "/total").subscribe((data: any) => {
       this.total = data.total;
     });
   }
@@ -99,19 +99,31 @@ export class HomeComponent implements OnInit {
   public openAddCarDialog(): void {
     this.dialogRef.open(AddCarDialogComponent,{
       width: '500px',
-      height: '400px'
+      height: '450px'
     });
 
-    AddCarDialogComponent.afterSubmit.subscribe((data) => {
-      if(data) this.fetchDataCount();
+    AddCarDialogComponent.afterSubmit.subscribe((success) => {
+      if(success){ this.fetchDataCount(); this.fetch(); }
     });
+  }
+
+  public editCar(car: Car): void {
+    this.dialogRef.open(EditCarDialogComponent,{
+      width: '500px',
+      height: '450px',
+      data: car
+    });
+
+    EditCarDialogComponent.afterSubmit.subscribe((success) => {
+    if(success){ this.fetchDataCount(); this.fetch(); }
+  });
+
   }
 
   public deleteCar(car: Car): void {
     let name = car.name.toUpperCase()
     this.snackBar.open("Deleting Car "+ name + ".", "Close", {duration: 2000});
-    this.http.delete(this.baseUrl + "/delete/" + car.id).subscribe((data: any) => {
-      console.log({data});
+    this.http.delete(baseUrl + "/delete/" + car.id).subscribe((data: any) => {
       this.snackBar.open(name + " Car Deleted!!", "Close", {duration: 2000});
       this.fetchDataCount();
       this.fetch();
