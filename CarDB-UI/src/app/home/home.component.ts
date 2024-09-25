@@ -1,7 +1,7 @@
-import { Component, Inject, OnInit, PLATFORM_ID, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, Inject, OnInit, PLATFORM_ID, ViewChild } from '@angular/core';
 import { Car, columnDef, DataFilterModel, baseUrl, FilterModel, CarResponse } from '../model';
 import { MatTableDataSource } from '@angular/material/table';
-import { MatSort } from '@angular/material/sort';
+import { MatSort, MatSortable, Sort, SortDirection } from '@angular/material/sort';
 import { FormControl } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { sampleTime, take } from 'rxjs';
@@ -16,12 +16,14 @@ import { FilterDialogComponent } from './filter-dialog/filter-dialog.component';
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, AfterViewInit {
   // Pagination
   readonly pageSizes = [20, 50, 100];
   public total: number = 0;
   public page: number = 0;
   public pageSize: number = 20;
+
+  public defaultSort: Sort = {active: 'id', direction: 'asc'};
 
   // Table Defs
   public readonly columnDef = columnDef;
@@ -48,13 +50,32 @@ export class HomeComponent implements OnInit {
 
   @ViewChild(MatSort)
   public set matSort(sort: MatSort) {
-      this.dataSource.sort = sort;
+    this.dataSource.sort = sort;
+  }
+
+  sortEventHandler(event: Sort): void {
+    // No Changes
+    if(event.direction === this.filterModel.order && event.active === this.filterModel.orderBy) return;
+
+    // If Sort is cleared - Reset to default
+    if(event.direction  === "") {
+      this.filterModel.order = "asc";
+      this.filterModel.orderBy = "id";
+    }
+    else{
+      this.filterModel.order = event.direction;
+      this.filterModel.orderBy = event.active;
+    }
+
+    this.trackFilters(this.filterModel);
+    this.fetch();
   }
 
   constructor(private http: HttpClient,
     public dialogRef: MatDialog,
     public snackBar: MatSnackBar
   ) {
+    this.dataSource.data = this.data;
     this.fetchDataCount();
   }
 
@@ -79,6 +100,12 @@ export class HomeComponent implements OnInit {
       this.fetch();
   }
 
+  ngAfterViewInit(): void {
+      const savedSort = this.getSavedSort();
+      console.log({savedSort});
+      if(this.dataSource.sort) this.dataSource.sort.sort(savedSort);
+  }
+
   public addFilter(): void {
     this.dialogRef.open(FilterDialogComponent, {
       width: '500px',
@@ -87,6 +114,8 @@ export class HomeComponent implements OnInit {
 
     FilterDialogComponent.onFilterAdd.pipe(take(1)).subscribe((filter: FilterModel) => {
       this.filterModel.filter.push(filter);
+      this.page = 0;
+      this.filterModel.page = 0;
       this.trackFilters(this.filterModel);
       this.fetch();
     });
@@ -121,6 +150,15 @@ export class HomeComponent implements OnInit {
     }
 
     return this.filterModel
+  }
+
+  public getSavedSort(): MatSortable{
+    const filterModel = this.getSavedFilters();
+    return {id: filterModel.orderBy, start: filterModel.order as SortDirection, disableClear:false};
+  }
+
+  isSortDefault(): boolean {
+    return this.filterModel.order === this.defaultSort.direction && this.filterModel.orderBy === this.defaultSort.active;
   }
 
 

@@ -17,10 +17,10 @@ export class EditCarDialogComponent {
     public snackBar: MatSnackBar,
     public http: HttpClient,
     @Inject(MAT_DIALOG_DATA) public data: Car) {
-      this.addForm.patchValue(data);
+      this.editForm.patchValue(data);
     }
 
-  public addForm: FormGroup = new FormGroup({
+  public editForm: FormGroup = new FormGroup({
     name: new FormControl("", Validators.required),
     origin: new FormControl(),
     model_year: new FormControl(),
@@ -36,15 +36,15 @@ export class EditCarDialogComponent {
   public static afterSubmit: Subject<boolean> = new Subject<boolean>();
 
   submit(): void {
-    this.addForm.markAllAsTouched();
-    if(!this.addForm.valid){
+    this.editForm.markAllAsTouched();
+    if(!this.editForm.valid){
       this.snackBar.open("Please fill out all required fields", "Close");
       return;
     }
     this.snackBar.open("Updating Car...", "Close", {duration: 2000});
 
     const body: Car = {
-      ...this.addForm.getRawValue(),
+      ...this.editForm.getRawValue(),
       id: this.data.id
     };
 

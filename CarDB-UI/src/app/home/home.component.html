@@ -20,7 +20,9 @@
 
   <div class="body">
     <section>
-      <table #table mat-table matSort [dataSource]="dataSource" *ngIf="data.length">
+      <table #table mat-table matSort
+        [dataSource]="dataSource"
+        (matSortChange)="sortEventHandler($event)">
         <ng-container
           *ngFor="let column of columnDef;"
           [matColumnDef]="column.key">
@@ -54,6 +56,9 @@
         <tr mat-header-row *matHeaderRowDef="headerDef;"></tr>
         <tr mat-row *matRowDef="let row; columns: headerDef;"></tr>
       </table>
+      <span  *ngIf="dataSource.data.length == 0">
+        <h2>No cars found</h2>
+      </span>
     </section>
 
     <aside>
