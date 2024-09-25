@@ -54,7 +54,23 @@ getCars = (req, res) => {
     //---
     if(req.body.filter) filters = req.body.filter;
 
-    query = collection.orderBy(orderBy, order);
+    let query = collection.orderBy(orderBy, order)
+    // query = query.limit(50); // Note: Remove when testing is done
+
+    //===================
+    // Approach 1 ==> Using where clause
+    //=== Requires Setting Up Indexes in Firestore ===
+    //===== Also Firestore Doesn't Allow Pattern Matching 
+    //      So can't perform global search =================
+    /*
+        filters.forEach(filter => {
+            query = query.where(filter.field, filter.ops, filter.value);
+        });
+
+        query.startAt(page*limit).endAt((page+1)*limit);
+        query = query.limit(limit);
+    */
+
     query.get()
         .then(snapshot => {
             total = parseInt(snapshot.size);
@@ -63,11 +79,24 @@ getCars = (req, res) => {
                 data = doc.data();
                 cars.push(data);
             });
+            
 
+            //===================
+            // Approach 2 ==> Instead Using JS Filter
+            //=== Requires Fetching All the data from Firestore ===
+            //===== Unneccessary Read of whole collecton ===========
+            /*
+                filters.forEach(filter => {
+                    query = query.where(filter.field, filter.ops, filter.value);
+                });
+
+                query.startAt(page*limit).endAt((page+1)*limit);
+                query = query.limit(limit);
+            */
             if(search != ""){
-                cars = cars.filter(car => {
-                    const name = car.name.toString();
-                    const origin = car.origin.toString();
+                cars = cars.filter((car) => {
+                    const name = car.name ? (car.name + "").toLowerCase() : "";
+                    const origin = car.origin ? (car.origin + "").toLowerCase() : "";
                     return (name.includes(search) || origin.includes(search))
                 });
             }
@@ -77,6 +106,7 @@ getCars = (req, res) => {
             }
             total = cars.length;
             cars = cars.slice(page*limit, (page+1)*limit);
+            //======== Approach 2 End ===========
             
             res.json({cars: cars, total: total});
         })
