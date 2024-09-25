@@ -8,6 +8,16 @@ const default_page = 0;
 const default_orderBy = "id";
 const default_order = "asc";
 
+checkConditions = (car, filter) => {
+    if(filter.ops == "==") return car[filter.field] == filter.value;
+    if(filter.ops == "!=") return car[filter.field] != filter.value;
+    if(filter.ops == ">") return car[filter.field] > filter.value;
+    if(filter.ops == "<") return car[filter.field] < filter.value;
+    if(filter.ops == ">=") return car[filter.field] >= filter.value;
+    if(filter.ops == "<=") return car[filter.field] <= filter.value;
+    return false;
+};
+
 /*
  * =================================================================================================
  * Get Cars Controller
@@ -20,47 +30,91 @@ getCars = (req, res) => {
     page = default_page;
     orderBy = default_orderBy;
     order = default_order;
+    search = "";
     filters = [];
 
+    //---
     if(req.query.order) order = req.query.order;
     else if(req.body.order) order = req.body.order;
 
     if(req.query.orderBy) orderBy = req.query.orderBy;
     else if(req.body.orderBy) orderBy = req.body.orderBy;
 
+    //---
     if(req.query.limit) limit = parseInt(req.query.limit);
     else if(req.body.limit) limit = parseInt(req.body.limit);
 
     if(req.query.page) page = parseInt(req.query.page);
     else if(req.body.page) page = parseInt(req.body.page);
 
+    //---
+    if(req.query.search) search = req.query.search;
+    else if(req.body.search) search = req.body.search;
+
+    //---
     if(req.body.filter) filters = req.body.filter;
 
-    query = collection.orderBy(orderBy, order);
+    let query = collection.orderBy(orderBy, order)
+    // query = query.limit(50); // Note: Remove when testing is done
 
-    filters.forEach(filter => {
-        query = query.where(filter.field, filter.ops, filter.value);
-    });
+    //===================
+    // Approach 1 ==> Using where clause
+    //=== Requires Setting Up Indexes in Firestore ===
+    //===== Also Firestore Doesn't Allow Pattern Matching 
+    //      So can't perform global search =================
+    /*
+        filters.forEach(filter => {
+            query = query.where(filter.field, filter.ops, filter.value);
+        });
 
-    query = query.startAt(page*limit);
-    query = query.limit(limit);
-
+        query.startAt(page*limit).endAt((page+1)*limit);
+        query = query.limit(limit);
+    */
 
     query.get()
         .then(snapshot => {
+            total = parseInt(snapshot.size);
             let cars = [];
             snapshot.forEach(doc => {
-                cars.push(doc.data());
+                data = doc.data();
+                cars.push(data);
             });
-            res.json(cars);
+            
+
+            //===================
+            // Approach 2 ==> Instead Using JS Filter
+            //=== Requires Fetching All the data from Firestore ===
+            //===== Unneccessary Read of whole collecton ===========
+            /*
+                filters.forEach(filter => {
+                    query = query.where(filter.field, filter.ops, filter.value);
+                });
+
+                query.startAt(page*limit).endAt((page+1)*limit);
+                query = query.limit(limit);
+            */
+            if(search != ""){
+                cars = cars.filter((car) => {
+                    const name = car.name ? (car.name + "").toLowerCase() : "";
+                    const origin = car.origin ? (car.origin + "").toLowerCase() : "";
+                    return (name.includes(search) || origin.includes(search))
+                });
+            }
+
+            if(filters.length > 0){
+                cars = cars.filter(car => filters.every(filter => checkConditions(car, filter)));
+            }
+            total = cars.length;
+            cars = cars.slice(page*limit, (page+1)*limit);
+            //======== Approach 2 End ===========
+            
+            res.json({cars: cars, total: total});
         })
         .catch(err => {
             console.error(err);
             res.status(500).send("Internal Server Error");
         });
 };
-
-searchCars = (req, res) => {res.send("searchCars")};
 
 /*
  * =================================================================================================
@@ -151,7 +205,6 @@ addCars = (req, res) => {
             ...req.body,
             id: doc_id
         }
-        console.log({data});
 
         db_context.collection(collectionName).doc(doc_id.toString()).set(data)
             .then(ref => {
@@ -226,4 +279,4 @@ deleteCars = (req, res) => {
 
 }
 
-module.exports = { getCars, searchCars, getTotalCars, addCars, editCars, deleteCars, download };
+module.exports = { getCars, getTotalCars, addCars, editCars, deleteCars, download };
