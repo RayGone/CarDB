@@ -92,8 +92,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
         let filtered = this.data.filter((row) => row.name.toLowerCase().includes(search_string) || row.origin.toLowerCase().includes(search_string));
         this.dataSource.data = filtered
 
-        this.fetch();
         this.trackFilters(this.filterModel);
+        this.fetch();
       });
 
       if(this.filterModel.search != "") this.searchControl.setValue(this.filterModel.search);
