@@ -1,0 +1,4 @@
+PORT=3000
+FIREBASE_SERVICE_ACCOUNT_KEY_PATH='src/service_account_key.json'
+FIREBASE_DB_COLLECTION_NAME='collection_name'
+DB_INIT_DATA_PATH='src/data.json'
