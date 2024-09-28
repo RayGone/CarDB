@@ -85,14 +85,6 @@ getCars = (req, res) => {
             // Approach 2 ==> Instead Using JS Filter
             //=== Requires Fetching All the data from Firestore ===
             //===== Unneccessary Read of whole collecton ===========
-            /*
-                filters.forEach(filter => {
-                    query = query.where(filter.field, filter.ops, filter.value);
-                });
-
-                query.startAt(page*limit).endAt((page+1)*limit);
-                query = query.limit(limit);
-            */
             if(search != ""){
                 cars = cars.filter((car) => {
                     const name = car.name ? (car.name + "").toLowerCase() : "";

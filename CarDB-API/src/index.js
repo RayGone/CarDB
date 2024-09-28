@@ -1,10 +1,11 @@
+require('dotenv').config()
 const express = require('express');
 const cors = require('cors');
 const {connect, initData} = require("./db-init.js");
 
 const routes = require("./router.js");
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const app = express();
 
 connect(); // Initialize Firebase
