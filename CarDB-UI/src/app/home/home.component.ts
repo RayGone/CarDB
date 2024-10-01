@@ -174,10 +174,16 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   fetch(): void {
     this.http.post<CarResponse>(this.filterUrl, this.filterModel).subscribe(data => {
-        this.data = data.cars;
-        this.dataSource.data = data.cars;
+      if(data.total < (this.pageSize * (this.page - 1))){
+        this.page = 0;
+        this.filterModel.page = 0;
+        this.fetch();
+        return;
+      }
+      this.data = data.cars;
+      this.dataSource.data = data.cars;
 
-        this.total = data.total;
+      this.total = data.total;
     });
   }
 
