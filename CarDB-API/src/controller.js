@@ -18,6 +18,8 @@ checkConditions = (car, filter) => {
     return false;
 };
 
+local_db = [];
+
 /*
  * =================================================================================================
  * Get Cars Controller
@@ -50,18 +52,51 @@ getCars = (req, res) => {
     //---
     if(req.query.search) search = req.query.search;
     else if(req.body.search) search = req.body.search;
+    search = search.toLowerCase();
 
     //---
     if(req.body.filter) filters = req.body.filter;
 
-    let query = collection.orderBy(orderBy, order)
-    // query = query.limit(50); // Note: Remove when testing is done
 
+    //===================
+    // Approach 3 ==> Local Cache of the DB
+    //=== Requires Fetching All the data from Firestore Once ===
+    if(local_db.length>0){
+        cars = [...local_db];
+
+        // --sorting;
+        cars.sort((carA, carB)=> order=='asc' ? carA[orderBy] > carB[orderBy] : carA[orderBy] < carB[orderBy])
+
+        // --searching;
+        if(search != ""){
+            cars = cars.filter((car) => {
+                const name = car.name ? (car.name + "").toLowerCase() : "";
+                const origin = car.origin ? (car.origin + "").toLowerCase() : "";
+                return (name.includes(search) || origin.includes(search))
+            });
+        }
+
+        // --filtering;
+        if(filters.length > 0){
+            cars = cars.filter(car => filters.every(filter => checkConditions(car, filter)));
+        }
+        total = cars.length;
+
+        // --limiting;
+        cars = cars.slice(page*limit, (page+1)*limit);
+
+        res.json({cars: cars, total: total});
+        return;
+    }
     //===================
     // Approach 1 ==> Using where clause
     //=== Requires Setting Up Indexes in Firestore ===
     //===== Also Firestore Doesn't Allow Pattern Matching 
     //      So can't perform global search =================
+    // --sorting;
+    let query = collection.orderBy(orderBy, order)
+    // query = query.limit(50); // Note: Remove when testing is done
+
     /*
         filters.forEach(filter => {
             query = query.where(filter.field, filter.ops, filter.value);
@@ -79,12 +114,14 @@ getCars = (req, res) => {
                 data = doc.data();
                 cars.push(data);
             });
-            
+
+            local_db = [...cars];            
 
             //===================
             // Approach 2 ==> Instead Using JS Filter
             //=== Requires Fetching All the data from Firestore ===
             //===== Unneccessary Read of whole collecton ===========
+            // --searching;
             if(search != ""){
                 cars = cars.filter((car) => {
                     const name = car.name ? (car.name + "").toLowerCase() : "";
@@ -93,10 +130,13 @@ getCars = (req, res) => {
                 });
             }
 
+            // --filtering;
             if(filters.length > 0){
                 cars = cars.filter(car => filters.every(filter => checkConditions(car, filter)));
             }
             total = cars.length;
+
+            // --limiting;
             cars = cars.slice(page*limit, (page+1)*limit);
             //======== Approach 2 End ===========
             
@@ -113,6 +153,10 @@ getCars = (req, res) => {
  * Get Cars Count Controller
  */
 getTotalCars = (req, res) => {
+    if(local_db.length > 0) {        
+        res.json({ total: local_db.length });
+        return;
+    }
     const db_context = getDbContext();
     db_context.collection(collectionName).count().get().then(snapshot => {
         count = snapshot.data().count;
@@ -200,6 +244,7 @@ addCars = (req, res) => {
 
         db_context.collection(collectionName).doc(doc_id.toString()).set(data)
             .then(ref => {
+                local_db.push(data);
                 res.json({ id: ref.id });
             }).catch(err => {
                 console.error(err);
@@ -230,6 +275,9 @@ editCars = (req, res) => {
         const doc_id = snapshot.docs[0].id;
         db_context.collection(collectionName).doc(doc_id).set(data)
             .then(ref => {
+                local_db = local_db.filter((car) => car.id!=data.id);
+                local_db.push(data);
+
                 res.json({ id: ref.id });
             }).catch(err => {
                 console.error(err);
@@ -257,6 +305,7 @@ deleteCars = (req, res) => {
         }
         const doc_id = snapshot.docs[0].id;
         db_context.collection(collectionName).doc(doc_id).delete().then(ref => {
+            local_db = local_db.filter((car) => car.id!=id);
             res.json({ id: id });
         }).catch(err => {
             console.error(err);
