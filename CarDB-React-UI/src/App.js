@@ -8,6 +8,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<CorePage />}></Route>
+        <Route path="/custom" element={<CorePage />}></Route>
       </Routes>
     </BrowserRouter>
   );
