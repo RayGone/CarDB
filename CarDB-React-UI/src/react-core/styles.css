@@ -197,3 +197,29 @@ td>.btn{
     margin: 5px 10px;
     text-decoration: wavy;
 }
+
+.page-nav-btn{
+    border-radius: 10px;
+    margin: 5px;
+    box-shadow: 1px 1px 5px #8ac4e0;
+    font-size: 0.9em;
+    text-align: center;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input.input-number::-webkit-outer-spin-button,
+input.input-number::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input.input-number[type=number] {
+    appearance: none;
+    -moz-appearance: textfield;
+}
+
+input.input-number{
+    width: fit-content;
+    font-size: small;
+}

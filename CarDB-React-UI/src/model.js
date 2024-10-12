@@ -78,3 +78,13 @@ export const filterOps = [
     value: 'Less Than or Equals'
   },
 ];
+
+export const page_sizes = [20, 50, 100]
+export const filterModel = {
+    filter: [],
+    limit: 20,
+    order: "asc",
+    orderBy: "id",
+    search: '',
+    page: 0
+  };
