@@ -3,7 +3,7 @@ import Layout from "./Layout.js";
 import Table, {Paginator} from "./Table.js";
 import "./styles.css";
 import { filterModel, page_sizes } from "../model.js";
-import { fetchData, init_data } from "./fetch.js";
+import { deleteData, fetchData, init_data } from "./fetch.js";
 import _ from "lodash";
 
 export default function Page1(){
@@ -13,7 +13,7 @@ export default function Page1(){
         }
         return JSON.parse(localStorage.getItem("filter"));
     }
-    
+
     let [data, setData] = useState(init_data);
     let [filter, setFilter] = useState(getFilter());
 
@@ -55,7 +55,11 @@ export default function Page1(){
                     debouncedSetFilter(f);
                 }}>
                 <section>
-                    <Table data={cars} bottomHeader={true} actions={true}/>
+                    <Table data={cars} bottomHeader={true} actions={true} onDelete={(id)=>{
+                        deleteData(id).then((response)=>{
+                            updateFilter(getFilter());
+                        })
+                    }}/>
                 </section>
                 <aside>Filter Section</aside>
             </Layout>

@@ -1,4 +1,4 @@
-import {columnDef} from "../model";
+import { columnDef } from "../model";
 
 export function TableHeader({columnDef, actions=false}){
     const action_col = <th>Actions</th>;
@@ -14,8 +14,8 @@ export function TableHeader({columnDef, actions=false}){
     );
 }
 
-export function TableRow({row, actions=false}){
-    const action_col = <td style={{display: "flex"}}><span className='btn btn-action'>Edit</span> <span className="btn btn-action">Delete</span></td>;
+export function TableRow({row, actions=false, onDelete=(id)=>{}, onEdit=(id)=>{}}){
+    const action_col = <td style={{display: "flex"}}><span className='btn btn-action' onClick={()=>onEdit(row.id)}>Edit</span> <span className="btn btn-action" onClick={()=>onDelete(row.id)}>Delete</span></td>;
     return (
         <tr>
             {
@@ -51,13 +51,13 @@ export function Paginator({total=0, size=0, page_sizes=[], page=0, onPageChange 
     )
 }
 
-export default function Table({data, bottomHeader=false, actions=true}){
+export default function Table({data, bottomHeader=false, actions=true, onDelete=(id)=>{}, onEdit=(id)=>{}}){
     return (
         <table>
             <TableHeader columnDef={columnDef} actions={actions}></TableHeader>
             <tbody>
                 {
-                    data.map((entry) => { return <TableRow key={entry.id} row={entry} actions={actions}/>})
+                    data.map((entry) => { return <TableRow key={entry.id} row={entry} actions={actions} onDelete={onDelete} onEdit={onEdit}/>})
                 }
             </tbody>
         </table>

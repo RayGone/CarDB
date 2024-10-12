@@ -21,3 +21,9 @@ export function fetchData(filter, onDataFetched=(data)=>null){
     .then((data) => {onDataFetched(data)})
     .catch((err) => console.log("Fetch Data Error", err));       
 }
+
+export async function deleteData(id){
+    return fetch(deleteURL+"/"+id, {
+        method: "DELETE"
+    })
+}
