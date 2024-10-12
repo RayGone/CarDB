@@ -1,25 +1,27 @@
 import {columnDef} from "../model";
 
-export function TableHeader({columnDef}){
+export function TableHeader({columnDef, actions=false}){
+    const action_col = <th>Actions</th>;
     return (
         <thead>
             <tr>
             {
                 columnDef.map((col) => <th className="header" key={col.key}>{col.header}</th>)
             }
-                <th>Actions</th>
+                {actions && action_col}
             </tr>
         </thead>
     );
 }
 
-export function TableRow({row}){
+export function TableRow({row, actions=false}){
+    const action_col = <td style={{display: "flex"}}><span className='btn btn-action'>Edit</span> <span className="btn btn-action">Delete</span></td>;
     return (
         <tr>
             {
                 columnDef.map((col, index) => <td key={index}>{row[col.key]}</td>)
             }
-            <td style={{display: "flex"}}><span className='btn btn-action'>Edit</span> <span className="btn btn-action">Delete</span></td>
+            {actions && action_col}
         </tr>
     );
 }
@@ -34,7 +36,7 @@ export function Paginator({total=0, size=0, page_sizes=[], page=0, onPageChange 
     return(
         <div className="flexRow flexAlignCenter" style={{margin: "10px 5px", justifyContent:"flex-end"}}>
             <span className="page-info-text">Items Per Page:</span>
-            <select onChange={onPageSizeChange} value={size}>
+            <select onChange={(e)=> onPageSizeChange(parseInt(e.target.value))} value={size}>
                 {page_sizes.map((s) => <option value={s} key={s}>{s}</option>)}
             </select>
             &nbsp;&nbsp;&nbsp;&nbsp;
@@ -49,16 +51,15 @@ export function Paginator({total=0, size=0, page_sizes=[], page=0, onPageChange 
     )
 }
 
-export default function Table({data, bottomHeader=false}){
+export default function Table({data, bottomHeader=false, actions=true}){
     return (
         <table>
-            <TableHeader columnDef={columnDef}></TableHeader>
+            <TableHeader columnDef={columnDef} actions={actions}></TableHeader>
             <tbody>
                 {
-                    data.map((entry) => { return <TableRow key={entry.id} row={entry} />})
+                    data.map((entry) => { return <TableRow key={entry.id} row={entry} actions={actions}/>})
                 }
             </tbody>
-            {!bottomHeader ?? <TableHeader columnDef={columnDef} />}
         </table>
     )
 }

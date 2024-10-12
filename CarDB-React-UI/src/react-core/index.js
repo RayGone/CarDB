@@ -25,7 +25,7 @@ export default function Page1(){
         <>
             <Layout>
                 <section>
-                    <Table data={cars} bottomHeader={true} />
+                    <Table data={cars} bottomHeader={true} actions={true}/>
                 </section>
                 <aside>Filter Section</aside>
             </Layout>
@@ -36,11 +36,12 @@ export default function Page1(){
                     size={size} 
                     page_sizes={page_sizes} 
                     page={page}  
-                    onPageSizeChange={(e) => { 
-                            // setFilter(filter => { return {
-                            //     ...filter,
-                            //     limit: e
-                            // }});
+                    onPageSizeChange={(n) => {                     
+                            const f = {
+                                ...filter,
+                                limit: n
+                            }
+                            setFilter(f);
                         }}
                     
                     onPageChange={(n) => {
