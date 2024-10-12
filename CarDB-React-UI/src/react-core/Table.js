@@ -19,7 +19,7 @@ export function TableRow({row, actions=false}){
     return (
         <tr>
             {
-                columnDef.map((col, index) => <td key={index}>{row[col.key]}</td>)
+                columnDef.map((col, index) => <td key={index}>{(row[col.key]+"").toUpperCase()}</td>)
             }
             {actions && action_col}
         </tr>

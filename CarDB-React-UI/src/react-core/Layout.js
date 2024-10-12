@@ -1,4 +1,6 @@
-export default function Layout({children}){
+import {downloadURL} from "./fetch";
+
+export default function Layout({children, search="", onSearchCar=(value)=>value , onAddCar=()=>{}}){
     return(
         <div className="container">
             <header>
@@ -6,10 +8,12 @@ export default function Layout({children}){
                 <div className="tab-buttons">
                     <input                  
                         placeholder="Search... [Name, Origin]"
-                        className="form-control" />
+                        className="form-control"
+                        value={search}
+                        onChange={({target}) => onSearchCar(target.value)} />
 
-                    <button className='btn'>Add Car</button>
-                    <a className='btn btn-primary' target="_blank" rel="noreferrer" href={process.env.REACT_APP_API + "/download"}>Download</a>
+                    <button className='btn' onClick={onAddCar}>Add Car</button>
+                    <a className='btn btn-primary' target="_blank" rel="noreferrer" href={downloadURL}>Download</a>
                 </div>
             </header>
 
@@ -17,6 +21,5 @@ export default function Layout({children}){
                 {children}
             </div>
         </div>
-
-    )
+    );
 }
