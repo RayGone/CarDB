@@ -14,8 +14,8 @@ export function TableHeader({columnDef, actions=false}){
     );
 }
 
-export function TableRow({row, actions=false, onDelete=(id)=>{}, onEdit=(id)=>{}}){
-    const action_col = <td style={{display: "flex"}}><span className='btn btn-action' onClick={()=>onEdit(row.id)}>Edit</span> <span className="btn btn-action" onClick={()=>onDelete(row.id)}>Delete</span></td>;
+export function TableRow({row, actions=false, onDelete=(id)=>{}, onEdit=(row)=>{}}){
+    const action_col = <td style={{display: "flex"}}><span className='btn btn-action' onClick={()=>onEdit(row)}>Edit</span> <span className="btn btn-action" onClick={()=>onDelete(row.id)}>Delete</span></td>;
     return (
         <tr>
             {
@@ -51,7 +51,7 @@ export function Paginator({total=0, size=0, page_sizes=[], page=0, onPageChange 
     )
 }
 
-export default function Table({data, bottomHeader=false, actions=true, onDelete=(id)=>{}, onEdit=(id)=>{}}){
+export default function Table({data, bottomHeader=false, actions=true, onDelete=(id)=>{}, onEdit=(row)=>{}}){
     return (
         <table>
             <TableHeader columnDef={columnDef} actions={actions}></TableHeader>

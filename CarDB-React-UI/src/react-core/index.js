@@ -3,10 +3,14 @@ import Layout from "./Layout.js";
 import Table, {Paginator} from "./Table.js";
 import "./styles.css";
 import { filterModel, page_sizes } from "../model.js";
-import { deleteData, fetchData, init_data } from "./fetch.js";
+import { fetchCars, init_data, deleteCar, addCar, editCar } from "./fetch.js";
 import _ from "lodash";
+import { AddFormModal, EditFormModal } from "./Modal";
 
 export default function Page1(){
+    const [addCarFlag, openAddCarDialog] = useState(false);
+    const [editCarRow, openEditCarDialog] = useState(null);
+
     function getFilter(){
         if(!localStorage.getItem("filter")){
             localStorage.setItem("filter", JSON.stringify(filterModel))
@@ -21,9 +25,10 @@ export default function Page1(){
         setFilter(f);
         localStorage.setItem("filter", JSON.stringify(f));
     }
+    const debouncedSetFilter = useMemo(()=>_.debounce(updateFilter, 100), []); //Limit Search and Page change;
 
     useEffect(() => {
-        fetchData(filter, (data) => {
+        fetchCars(filter, (data) => {
             setData(data);
 
             if(data.total > 0 && data.cars.length === 0){
@@ -34,8 +39,6 @@ export default function Page1(){
             }
         })
     },[filter, setData])
-
-    const debouncedSetFilter = useMemo(()=>_.debounce(updateFilter, 100), []);
 
     const search = filter.search
     const page = filter.page;
@@ -53,13 +56,18 @@ export default function Page1(){
                         search: search
                     }
                     debouncedSetFilter(f);
-                }}>
+                }}
+                onAddCar={()=> { openAddCarDialog(active => !active)} }>
                 <section>
-                    <Table data={cars} bottomHeader={true} actions={true} onDelete={(id)=>{
-                        deleteData(id).then((response)=>{
-                            updateFilter(getFilter());
-                        })
-                    }}/>
+                    <Table data={cars} 
+                        bottomHeader={true} actions={true} 
+                        onDelete={(id)=>{
+                            deleteCar(id).then((response)=>{
+                                updateFilter(getFilter());
+                            });
+                        }}
+                        onEdit={(row) => openEditCarDialog(row)}
+                    />
                 </section>
                 <aside>Filter Section</aside>
             </Layout>
@@ -75,7 +83,7 @@ export default function Page1(){
                                 ...filter,
                                 limit: n
                             }
-                            setFilter(f);
+                            updateFilter(f);
                         }}
                     
                     onPageChange={(n) => {
@@ -89,6 +97,41 @@ export default function Page1(){
                     }}
                 />
             </footer>
+            {
+                addCarFlag 
+                    && 
+                <AddFormModal 
+                    onOk={(row)=>{addCar(row).then((res) =>{
+                            updateFilter(getFilter());
+                            openAddCarDialog(false);
+                        })}} 
+                    onClose={()=>{openAddCarDialog(false)}}/>
+            }
+            {
+                editCarRow
+                    && 
+                <EditFormModal
+                    data={editCarRow}
+                    onOk={(row) => {
+                        let noChange = true;
+                        for(let key in row){
+                            if(row[key] !== editCarRow[key]){
+                                noChange = false;
+                                break;
+                            }
+                        }
+
+                        if(row.id !== editCarRow.id || noChange){
+                            openEditCarDialog(null);
+                            return;
+                        }
+                        editCar(row).then((res) => {
+                            updateFilter(getFilter());
+                            openEditCarDialog(null);
+                        }).catch((e) => alert("Network Error!! Please Try Again"));
+                    }}
+                    onClose={()=>{openEditCarDialog(null)}}/>
+            }
         </>
     );
 }

@@ -1,0 +1,19 @@
+.form{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+    overflow: auto;
+}
+
+.input{
+  width: 350px;
+  margin: 5px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 15px;
+  border-radius: 5px;
+  border: 1px solid #888;
+}

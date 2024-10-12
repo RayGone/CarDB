@@ -176,6 +176,11 @@ input.form-control:hover, input.form-control:focus{
     background-color: rgb(18, 67, 126);
 }
 
+.btn:disabled, .page-nav-btn:disabled{
+  background-color: rgba(107, 0, 0, 0.6);
+  color: whitesmoke;
+}
+
 a.btn{
     text-decoration: none;
 }
@@ -199,7 +204,7 @@ td>.btn{
 }
 
 .page-nav-btn{
-    border-radius: 10px;
+    border-radius: 25px;
     margin: 5px;
     box-shadow: 1px 1px 5px #8ac4e0;
     font-size: 0.9em;
