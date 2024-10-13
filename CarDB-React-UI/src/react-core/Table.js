@@ -42,7 +42,7 @@ export function Paginator({total=0, size=0, page_sizes=[], page=0, onPageChange 
             &nbsp;&nbsp;&nbsp;&nbsp;
             <div>
                 <button className="page-nav-btn" disabled={page === 0} onClick={()=> onPageChange(page-1)}>{"<"}</button> 
-                <input className="input-number" type="number"  max={max_n_page} min={1} value={curr_page} onChange={(e) => onPageChange(parseInt(e.target.value))}/>
+                <input className="page-nav-page-input input-number" type="number"  max={max_n_page} min={1} value={curr_page} onChange={(e) => onPageChange(parseInt(e.target.value))}/>
                 <button className="page-nav-btn" disabled={page === max_n_page} onClick={()=> onPageChange(page+1)}>{">"}</button>
             </div>
 

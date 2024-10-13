@@ -1,4 +1,5 @@
-import {downloadURL} from "./fetch";
+import {downloadURL} from "../fetch";
+import { FaPlus, FaDownload } from "react-icons/fa";
 
 export default function Layout({children, search="", onSearchCar=(value)=>value , onAddCar=()=>{}}){
     return(
@@ -12,8 +13,8 @@ export default function Layout({children, search="", onSearchCar=(value)=>value 
                         value={search}
                         onChange={({target}) => onSearchCar(target.value)} />
 
-                    <button className='btn' onClick={onAddCar}>Add Car</button>
-                    <a className='btn btn-primary' target="_blank" rel="noreferrer" href={downloadURL}>Download</a>
+                    <button className='btn' onClick={onAddCar}><FaPlus/>&nbsp;&nbsp;Add Car</button>
+                    <a className='btn btn-primary' target="_blank" rel="noreferrer" href={downloadURL}>Download &nbsp;&nbsp; <FaDownload /></a>
                 </div>
             </header>
 

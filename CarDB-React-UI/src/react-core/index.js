@@ -1,11 +1,12 @@
 import { useEffect, useState, useMemo } from "react";
-import Layout from "./Layout.js";
-import Table, {Paginator} from "./Table.js";
+import Layout from "./Layout";
+import Table, {Paginator} from "./Table";
 import "./styles.css";
-import { filterModel, page_sizes } from "../model.js";
-import { fetchCars, init_data, deleteCar, addCar, editCar } from "./fetch.js";
+import { filterModel, page_sizes } from "../model";
+import { fetchCars, init_data, deleteCar, addCar, editCar } from "../fetch";
 import _ from "lodash";
 import { AddFormModal, EditFormModal } from "./Modal";
+import Filter from "./Filter";
 
 export default function Page1(){
     const [addCarFlag, openAddCarDialog] = useState(false);
@@ -69,7 +70,7 @@ export default function Page1(){
                         onEdit={(row) => openEditCarDialog(row)}
                     />
                 </section>
-                <aside>Filter Section</aside>
+                <aside><Filter onAddFilter={updateFilter}/></aside>
             </Layout>
             
             <footer>

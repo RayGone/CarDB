@@ -98,3 +98,9 @@ export const filterModel = {
     search: '',
     page: 0
   };
+
+export const filter1 = {
+  field: "",
+  ops: "",
+  value: ""
+}

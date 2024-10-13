@@ -62,7 +62,7 @@ export function AddFormModal({active=true, onOk=(row)=>row, onClose=()=>{}, okTe
                     columnDef.map((col)=> {
                         if(col.key === "id") return "";
                         return (
-                            <input type={col.type} className="input" key={col.key} placeholder={col.header + (col.required ? " **" : "")} name={col.key} required={col.required} />                            
+                            <input type={col.type} className={"input"+(col.type==="number"?" input-number":"")} key={col.key} placeholder={col.header + (col.required ? " **" : "")} name={col.key} required={col.required} />                            
                         );
                     })
                 }
@@ -100,7 +100,7 @@ export function EditFormModal({data, active=true, onOk=(row)=>row, onClose=()=>{
                     columnDef.map((col)=> {
                         if(col.key === "id") return "";
                         return (
-                            <input type={col.type} className="input" key={col.key} placeholder={col.header} name={col.key} defaultValue={data[col.key]}/>
+                            <input type={col.type} className={"input"+(col.type==="number"?" input-number":"")} key={col.key} placeholder={col.header} name={col.key} defaultValue={data[col.key]}/>
                         );
                     })
                 }
