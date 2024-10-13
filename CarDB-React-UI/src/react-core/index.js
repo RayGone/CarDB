@@ -13,7 +13,7 @@ export default function Page1(){
     const [editCarRow, openEditCarDialog] = useState(null);
 
     function getFilter(){
-        if(!localStorage.getItem("filter") || true){
+        if(!localStorage.getItem("filter")){
             localStorage.setItem("filter", JSON.stringify(filterModel))
         }
         return JSON.parse(localStorage.getItem("filter"));

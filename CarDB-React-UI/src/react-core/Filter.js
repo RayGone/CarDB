@@ -70,14 +70,4 @@ export default function Filter({filters=[], onAddFilter=(f)=>{}}){
         </>
     );
 }
-
-{/* 
-<div class="filter-desc">
-                <strong>{{ filter.field | titlecase}}</strong><br>
-                {{ filter.ops | opName}}<br>
-                <strong>{{ filter.value }}</strong>
-                </div>
-                <button mat-icon-button color="warn" (click)="deleteFilter(filter)">
-                <mat-icon>delete</mat-icon>
-                </button> */}
                 
