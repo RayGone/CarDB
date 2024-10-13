@@ -29,17 +29,18 @@ export default function Page1(){
     const debouncedSetFilter = useMemo(()=>_.debounce(updateFilter, 100), []); //Limit Search and Page change;
 
     useEffect(() => {
-        fetchCars(currFilterModel, (data) => {
-            setData(data);
+        console.log("Calling Effect", currFilterModel);
+        fetchCars(currFilterModel, (batch) => {
+            setData(prev=>batch);
 
-            if(data.total > 0 && data.cars.length === 0){
+            if(batch.total > 0 && batch.cars.length === 0){
                 updateFilter({
                     ...currFilterModel,
                     page:0
                 });
             }
         })
-    },[currFilterModel, setData])
+    },[currFilterModel])
 
     const search = currFilterModel.search
     const page = currFilterModel.page;
@@ -47,6 +48,8 @@ export default function Page1(){
     const cars = data.cars;
     const total = data.total;
     const conditions = currFilterModel.filter;
+    const sort = currFilterModel.orderBy;
+    const order = currFilterModel.order;
 
     return (
         <>
@@ -62,6 +65,17 @@ export default function Page1(){
                 onAddCar={()=> { openAddCarDialog(active => !active)} }>
                 <section>
                     <Table data={cars} 
+                        sort={sort}
+                        order={order}
+                        onSort={(key)=>{
+                            const changedOrder = sort !== key ? "asc" : (order === "asc" ? "desc" : "asc");
+                            const f = {
+                                ...currFilterModel,
+                                orderBy: key,
+                                order: changedOrder
+                            };
+                            updateFilter(f);
+                        }}
                         bottomHeader={true} actions={true} 
                         onDelete={(id)=>{
                             deleteCar(id).then((response)=>{
@@ -71,11 +85,21 @@ export default function Page1(){
                         onEdit={(row) => openEditCarDialog(row)}
                     />
                 </section>
-                <aside><Filter filters={conditions} onAddFilter={(f)=> {
-                    const nF = {...currFilterModel};
-                    nF.filter.push(f);
-                    updateFilter(nF);
-                }}/></aside>
+                <aside>
+                    <Filter filters={conditions} 
+                        onAddFilter={(f)=> {
+                            const nF = {...currFilterModel};
+                            nF.filter.push(f);
+                            updateFilter(nF);
+                        }}
+                        
+                        onRemoveFilter={(index) => {
+                            let f = [...currFilterModel.filter]
+                            f.splice(index,1);
+                            const nF = {...currFilterModel, filter:f}
+                            updateFilter(nF);
+                        }}/>
+                </aside>
             </Layout>
             
             <footer>

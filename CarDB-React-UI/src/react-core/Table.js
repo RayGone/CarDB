@@ -1,12 +1,16 @@
 import { columnDef } from "../model";
+import { FaArrowCircleUp, FaArrowCircleDown } from "react-icons/fa";
 
-export function TableHeader({columnDef, actions=false}){
+export function TableHeader({columnDef, sort, order, actions=false, onSort=(key)=>key}){
     const action_col = <th>Actions</th>;
+    const sort_el = order === "asc" ? <>&nbsp;&nbsp;<FaArrowCircleUp /></> : <>&nbsp;&nbsp;<FaArrowCircleDown /></>;
     return (
         <thead>
             <tr>
             {
-                columnDef.map((col) => <th className="header" key={col.key}>{col.header}</th>)
+                columnDef.map((col) => <th className="header" key={col.key} onClick={()=>onSort(col.key)}>
+                    <span style={{display:"flex", flexDirection:"row", justifyContent:"flex-start",alignItems:"center"}}>{col.header}{ col.key===sort ? sort_el : "" } </span>
+                </th>)
             }
                 {actions && action_col}
             </tr>
@@ -51,10 +55,10 @@ export function Paginator({total=0, size=0, page_sizes=[], page=0, onPageChange 
     )
 }
 
-export default function Table({data, bottomHeader=false, actions=true, onDelete=(id)=>{}, onEdit=(row)=>{}}){
+export default function Table({data, sort, order, actions=true, onDelete=(id)=>{}, onEdit=(row)=>{}, onSort=(key)=>key}){
     return (
         <table>
-            <TableHeader columnDef={columnDef} actions={actions}></TableHeader>
+            <TableHeader sort={sort} order={order} columnDef={columnDef} actions={actions} onSort={onSort}></TableHeader>
             <tbody>
                 {
                     data.map((entry) => { return <TableRow key={entry.id} row={entry} actions={actions} onDelete={onDelete} onEdit={onEdit}/>})

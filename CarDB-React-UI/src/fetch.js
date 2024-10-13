@@ -12,12 +12,15 @@ export const init_data = {
 };
 
 export function fetchCars(filter, onDataFetched=(data)=>null){
-    fetch(filterURL,{
+    fetch(filterURL, {
         method: "POST",
+        mode: "cors",
         body: JSON.stringify(filter),
         headers: {
             "Content-Type": "application/json",
+            "Accept": "application/json",
         },
+        cache: "no-store",
     })
     .then((response) => response.json())
     .then((data) => {onDataFetched(data)})

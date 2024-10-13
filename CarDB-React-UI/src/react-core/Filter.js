@@ -1,8 +1,8 @@
 import { FaTrash, FaPlus, FaCheck  } from "react-icons/fa";
-import { filterAttributes, filterOps, filter1} from "../model";
+import { filterAttributes, filterOps, filter1, columnDef} from "../model";
 import { useState } from "react";
 
-export default function Filter({filters=[], onAddFilter=(f)=>{}}){
+export default function Filter({filters=[], onAddFilter=(f)=>{}, onRemoveFilter=(i)=>{}}){
     const [addFilter, openAddFilter] = useState(filters.length===0);
     const [filterAttr, setFilterAttr] = useState("-1");
     const [filterOp, setFilterOps] = useState("-1");
@@ -19,6 +19,7 @@ export default function Filter({filters=[], onAddFilter=(f)=>{}}){
         onAddFilter(f);
         openAddFilter(false);
     }
+
     return (
         <>
             <h2 className="flexRow flexJustifySpaceBetween flexAlignCenter">
@@ -54,14 +55,18 @@ export default function Filter({filters=[], onAddFilter=(f)=>{}}){
             <div className="filter-body">
             {
                 filters.map((filter,index) => {
+                    const col = columnDef.filter((col)=> col.key===filter.field);
+                    const attrKey = col[0].header;
+                    const opsModel = filterOps.filter((ops)=> ops.key===filter.ops);
+                    const opValue = opsModel[0].value;
                     return (
                         <div className="flexRow flexAlignCenter" key={index}>
                             <div className="filter-desc">
-                                <strong>{filter.field}</strong><br />
-                                <span>{filter.ops}</span><br />
+                                <strong>{attrKey}</strong><br />
+                                <span>{opValue}</span><br />
                                 <strong>{filter.value}</strong>
                             </div>
-                            <span style={{margin:"10px", color: "red"}}><FaTrash /></span>
+                            <span style={{margin:"10px", color: "red"}} onClick={()=>onRemoveFilter(index)}><FaTrash /></span>
                         </div>
                     );
                 })
