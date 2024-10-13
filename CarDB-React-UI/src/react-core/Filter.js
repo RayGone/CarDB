@@ -17,6 +17,7 @@ export default function Filter({filters=[], onAddFilter=(f)=>{}}){
         if(f.filter === "-1" || f.ops === "-1" || f.value < 0) return;
 
         onAddFilter(f);
+        openAddFilter(false);
     }
     return (
         <>
@@ -55,7 +56,7 @@ export default function Filter({filters=[], onAddFilter=(f)=>{}}){
                 filters.map((filter,index) => {
                     return (
                         <div className="flexRow flexAlignCenter" key={index}>
-                            <div class="filter-desc">
+                            <div className="filter-desc">
                                 <strong>{filter.field}</strong><br />
                                 <span>{filter.ops}</span><br />
                                 <strong>{filter.value}</strong>

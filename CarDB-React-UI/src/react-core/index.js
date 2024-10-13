@@ -13,39 +13,40 @@ export default function Page1(){
     const [editCarRow, openEditCarDialog] = useState(null);
 
     function getFilter(){
-        if(!localStorage.getItem("filter")){
+        if(!localStorage.getItem("filter") || true){
             localStorage.setItem("filter", JSON.stringify(filterModel))
         }
         return JSON.parse(localStorage.getItem("filter"));
     }
 
     let [data, setData] = useState(init_data);
-    let [filter, setFilter] = useState(getFilter());
+    let [currFilterModel, setFilterModel] = useState(getFilter());
 
     function updateFilter(f){
-        setFilter(f);
+        setFilterModel(f);
         localStorage.setItem("filter", JSON.stringify(f));
     }
     const debouncedSetFilter = useMemo(()=>_.debounce(updateFilter, 100), []); //Limit Search and Page change;
 
     useEffect(() => {
-        fetchCars(filter, (data) => {
+        fetchCars(currFilterModel, (data) => {
             setData(data);
 
             if(data.total > 0 && data.cars.length === 0){
                 updateFilter({
-                    ...filter,
+                    ...currFilterModel,
                     page:0
                 });
             }
         })
-    },[filter, setData])
+    },[currFilterModel, setData])
 
-    const search = filter.search
-    const page = filter.page;
-    const size = filter.limit;
+    const search = currFilterModel.search
+    const page = currFilterModel.page;
+    const size = currFilterModel.limit;
     const cars = data.cars;
     const total = data.total;
+    const conditions = currFilterModel.filter;
 
     return (
         <>
@@ -53,7 +54,7 @@ export default function Page1(){
                 search={search}
                 onSearchCar={(search)=>{                    
                     const f = {
-                        ...filter,
+                        ...currFilterModel,
                         search: search
                     }
                     debouncedSetFilter(f);
@@ -70,7 +71,11 @@ export default function Page1(){
                         onEdit={(row) => openEditCarDialog(row)}
                     />
                 </section>
-                <aside><Filter onAddFilter={updateFilter}/></aside>
+                <aside><Filter filters={conditions} onAddFilter={(f)=> {
+                    const nF = {...currFilterModel};
+                    nF.filter.push(f);
+                    updateFilter(nF);
+                }}/></aside>
             </Layout>
             
             <footer>
@@ -81,7 +86,7 @@ export default function Page1(){
                     page={page}  
                     onPageSizeChange={(n) => {                     
                             const f = {
-                                ...filter,
+                                ...currFilterModel,
                                 limit: n
                             }
                             updateFilter(f);
@@ -91,7 +96,7 @@ export default function Page1(){
                         if(n<0 || n > (total/size)) return;
 
                         const f = {
-                            ...filter,
+                            ...currFilterModel,
                             page: n
                         }
                         debouncedSetFilter(f);
