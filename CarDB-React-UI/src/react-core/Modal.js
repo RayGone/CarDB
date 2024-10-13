@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import "./modal.css";
 import { columnDef } from "../model";
 import "./form.css";
@@ -36,10 +36,10 @@ export default function Modal({children, title, active=true, activeBtn=true, onC
 }
 
 export function AddFormModal({active=true, onOk=(row)=>row, onClose=()=>{}, okText="Submit"}){
-    const formId = Date.now().toString();
+    const formRef = useRef(null);
 
     function onFormSubmit(){
-        const formEl = document.getElementById(formId);
+        const formEl = formRef.current;
         const form = new FormData(formEl);
         let car = {};
 
@@ -50,6 +50,7 @@ export function AddFormModal({active=true, onOk=(row)=>row, onClose=()=>{}, okTe
             if(col.type === "string") car[col.key] = car[col.key].toLowerCase();
             else if(col.type === "number") car[col.key] = parseInt(car[col.key]);
         }
+        console.log({car});
 
         if(!validated) alert("Car Name, Origin & Model Year are required field");
         else onOk(car);
@@ -57,7 +58,7 @@ export function AddFormModal({active=true, onOk=(row)=>row, onClose=()=>{}, okTe
 
     return (
         <Modal title="Add Car" active={true} onClose={onClose} onOk={onFormSubmit} okText={okText}>
-            <form className="form" id={formId}>
+            <form className="form" ref={formRef}>
                 {
                     columnDef.map((col)=> {
                         if(col.key === "id") return "";
@@ -73,10 +74,10 @@ export function AddFormModal({active=true, onOk=(row)=>row, onClose=()=>{}, okTe
 }
 
 export function EditFormModal({data, active=true, onOk=(row)=>row, onClose=()=>{}, okText="Submit"}){
-    const formId = Date.now().toString();
+    const formRef = useRef(null);
 
     function onFormSubmit(){
-        const formEl = document.getElementById(formId);
+        const formEl = formRef.current;
         const form = new FormData(formEl);
         let car = {};
 
@@ -95,7 +96,7 @@ export function EditFormModal({data, active=true, onOk=(row)=>row, onClose=()=>{
 
     return (
         <Modal title={<>Edit Car <i>{data.name.toUpperCase()}</i></>} active={true} onClose={onClose} onOk={onFormSubmit} okText={okText} >
-            <form className="form" id={formId}>
+            <form className="form" ref={formRef}>
                 {
                     columnDef.map((col)=> {
                         if(col.key === "id") return "";
