@@ -4,7 +4,7 @@ import Table, {Paginator} from "./Table";
 import "./styles.css";
 import { filterModel, page_sizes } from "../model";
 import { fetchCars, init_data, deleteCar, addCar, editCar } from "../fetch";
-import _ from "lodash";
+import _, { orderBy } from "lodash";
 import { AddFormModal, EditFormModal } from "./Modal";
 import Filter from "./Filter";
 
@@ -29,7 +29,6 @@ export default function Page1(){
     const debouncedSetFilter = useMemo(()=>_.debounce(updateFilter, 100), []); //Limit Search and Page change;
 
     useEffect(() => {
-        console.log("Calling Effect", currFilterModel);
         fetchCars(currFilterModel, (batch) => {
             setData(prev=>batch);
 
@@ -73,7 +72,15 @@ export default function Page1(){
                                 ...currFilterModel,
                                 orderBy: key,
                                 order: changedOrder
-                            };
+                            };                            
+                            cars.sort((carA, carB) => {
+                                if(carA[f.orderBy] === carB[f.orderBy]) return 0;
+                                const cond = f.order === "asc" ? carA[f.orderBy] > carB[f.orderBy] : carA[f.orderBy] < carB[f.orderBy];
+                                return cond ? 1 : -1;
+                            });
+                            const sortedData = {...data, cars: cars};
+                            setData(sortedData);
+
                             updateFilter(f);
                         }}
                         bottomHeader={true} actions={true} 
