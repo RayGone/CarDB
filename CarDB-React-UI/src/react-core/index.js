@@ -4,7 +4,7 @@ import Table, {Paginator} from "./Table";
 import "./styles.css";
 import { filterModel, page_sizes } from "../model";
 import { fetchCars, init_data, deleteCar, addCar, editCar } from "../fetch";
-import _, { orderBy } from "lodash";
+import _ from "lodash";
 import { AddFormModal, EditFormModal } from "./Modal";
 import Filter from "./Filter";
 
