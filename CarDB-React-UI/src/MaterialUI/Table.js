@@ -10,8 +10,11 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import Paper from '@mui/material/Paper';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { visuallyHidden } from '@mui/utils';
 import { columnDef } from '../model';
+import { IconButton } from '@mui/material';
 
 function EnhancedTableHead({ onRequestSort=(key)=>{}, order="asc", orderBy="id" }) {
     const createSortHandler = (property) => (event) => {
@@ -24,7 +27,7 @@ function EnhancedTableHead({ onRequestSort=(key)=>{}, order="asc", orderBy="id" 
             {columnDef.map((col) => (
                 <TableCell
                     key={col.key}
-                    align='center'
+                    align='left'
                     sortDirection={orderBy === col.key ? order : false}
                 >                        
                     <TableSortLabel
@@ -55,7 +58,8 @@ EnhancedTableHead.propTypes = {
   orderBy: PropTypes.string,
 };
 
-export default function EnhancedTable({data, total=0, order='asc', orderBy, page=0, pageSize=10, pageSizeOptions=[], onPageChange=(page)=>{}, onPageSizeChange=(size)=>{}, onSort=(key)=>{}}) {
+export default function EnhancedTable({data, total=0, order='asc', orderBy, page=0, pageSize=10, pageSizeOptions=[], 
+                    onEdit=(id)=>{}, onDelete=(id)=>{}, onPageChange=(page)=>{}, onPageSizeChange=(size)=>{}, onSort=(key)=>{}}) {
     // const visibleRows = React.useMemo(
     //     () =>
     //     [...data]
@@ -90,10 +94,14 @@ export default function EnhancedTable({data, total=0, order='asc', orderBy, page
                                     sx={{ cursor: 'pointer' }}
                                 >
                                     {
-                                        columnDef.map((col)=> <TableCell key={col.key} scope={col.key==="id"?"row":""} align="center">
-                                            {row[col.key]}
+                                        columnDef.map((col)=> <TableCell key={col.key} scope={col.key==="id"?"row":""} align="left">
+                                            {col.key==="name" ? row[col.key].toUpperCase() : row[col.key]}
                                         </TableCell>)
                                     }
+                                    <TableCell>
+                                        <IconButton onClick={() => onEdit(row.id)}><EditIcon /></IconButton>
+                                        <IconButton onClick={() => onDelete(row.id)}><DeleteIcon /></IconButton>
+                                    </TableCell>
                                 </TableRow>
                             );
                         })}
@@ -125,5 +133,7 @@ EnhancedTable.propTypes = {
   onPageChange: PropTypes.func,
   onPageSizeChange: PropTypes.func,
   onSort: PropTypes.func,
+  onEdit: PropTypes.func,
+  onDelete: PropTypes.func
 //   limit: PropTypes.number.isRequired,
 };

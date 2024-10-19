@@ -17,6 +17,8 @@ import AddIcon from '@mui/icons-material/Add';
 
 import {styled, alpha} from "@mui/material/styles";
 
+import {downloadURL} from "../fetch";
+
 export default function MUILayout({children, search="", onSearch, onAdd, onDownload, footerEl}){
     const Search = styled('div')(({ theme }) => ({
         position: 'relative',
@@ -69,7 +71,7 @@ export default function MUILayout({children, search="", onSearch, onAdd, onDownl
                     <Toolbar sx={{flexDirection:"row", justifyContent:"space-between", width:"100%"}}>
                         <Stack direction="row" spacing={2} sx={{alignItems: "center"}}>
                             <IconButton aria-label="Logo" disableTouchRipple><img className="logo" src="/car.jpg" alt="Logo - a Car" /></IconButton>
-                            <Typography component="div" variant="h5" sx={{ fontWeight:"bold", color: "rgb(170, 127, 255)", textShadow:"2px 2px 8px rgba(107, 113, 73, 0.8)"}}>CarDB</Typography>
+                            <Typography component="div" variant="h4" sx={{ fontWeight:"bolder", color: "rgb(170, 127, 255)", textShadow:"2px 2px 8px rgba(107, 113, 73, 0.8)"}}>CarDB</Typography>
                         </Stack>
 
                         <Box color="#333">Switch to: <Link to="/custom">Custom View</Link></Box>
@@ -85,7 +87,7 @@ export default function MUILayout({children, search="", onSearch, onAdd, onDownl
                                     />
                             </Search>
                             <Button startIcon={<AddIcon />} color="primary" variant="contained">Add Car</Button>
-                            <Button startIcon={<DownloadIcon />} color="secondary" variant="contained">Download</Button>
+                            <Button href={downloadURL} startIcon={<DownloadIcon />} color="secondary" variant="contained">Download</Button>
                         </Stack>
                     </Toolbar>            
                 </AppBar>
