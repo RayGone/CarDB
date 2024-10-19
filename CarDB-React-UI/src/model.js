@@ -89,7 +89,7 @@ export const filterOps = [
   },
 ];
 
-export const page_sizes = [20, 50, 100]
+export const pageSizeOptions = [20, 50, 100]
 export const filterModel = {
     filter: [],
     limit: 20,
