@@ -69,12 +69,13 @@ export default function EnhancedTable({data, total=0, order='asc', orderBy, page
     // );
 
     return (
-        <Box sx={{ width: '100%' }}>
+        <Box sx={{ width: '75%', height:'80%' }}>
             <Paper sx={{ width: '100%', mb: 2 }}>
                 <TableContainer>
                     <Table
-                        sx={{ minWidth: 750 }}
-                        aria-labelledby="tableTitle"
+                        size="small"
+                        sx={{ minWidth: 550 }}
+                        aria-labelledby="Car Table"
                     >
                         <EnhancedTableHead
                             order={order}
@@ -98,9 +99,9 @@ export default function EnhancedTable({data, total=0, order='asc', orderBy, page
                                             {col.key==="name" ? row[col.key].toUpperCase() : row[col.key]}
                                         </TableCell>)
                                     }
-                                    <TableCell>
-                                        <IconButton onClick={() => onEdit(row.id)}><EditIcon /></IconButton>
-                                        <IconButton onClick={() => onDelete(row.id)}><DeleteIcon /></IconButton>
+                                    <TableCell sx={{minWidth: 120}}>
+                                        <IconButton onClick={() => onEdit(row.id)} ><EditIcon/></IconButton>
+                                        <IconButton onClick={() => onDelete(row.id)} ><DeleteIcon /></IconButton>
                                     </TableCell>
                                 </TableRow>
                             );
@@ -114,8 +115,8 @@ export default function EnhancedTable({data, total=0, order='asc', orderBy, page
                     count={total}
                     rowsPerPage={pageSize}
                     page={page}
-                    onPageChange={onPageChange}
-                    onRowsPerPageChange={onPageSizeChange}
+                    onPageChange={(e, p) => onPageChange(p)}
+                    onRowsPerPageChange={(e) => onPageSizeChange(e.target.value)}
                 />
             </Paper>
         </Box>

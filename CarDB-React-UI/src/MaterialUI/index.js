@@ -1,25 +1,26 @@
 import { useState, useEffect, useMemo } from "react";
-import _ from "lodash";
+import _, { update } from "lodash";
 import Layout from "./Layout";
 import EnhancedTable from "./Table";
 import { fetchCars, init_data } from "../fetch";
 import { setFilterToStorage, getFilterFromStorage, sortObj, setSort } from "../util";
 import { pageSizeOptions } from "../model";
+import { Paper } from "@mui/material";
 
 export default function MUIPage(){
     const [data, setData] = useState(init_data);
     const [filterModel, setFilterModel] = useState(getFilterFromStorage());
 
     function updateFilter(f){
-        setFilterToStorage(f);
         setFilterModel(f);
+        setFilterToStorage(f);
     }
 
-    const debouncedSetFilter = useMemo(()=>_.debounce(updateFilter, 100), []); //Limit Search and Page change;
+    const debouncedSetFilter = useMemo(()=>_.debounce(updateFilter, 50), []); //Limit Search and Page change;
 
     useEffect(() => {
         fetchCars(filterModel, (batch) => {
-            setData(prev=>batch);
+            setData(batch);
 
             if(batch.total > 0 && batch.cars.length === 0){
                 updateFilter({
@@ -39,7 +40,14 @@ export default function MUIPage(){
     const orderBy = filterModel.orderBy;
     const order = filterModel.order;
 
-    return <Layout search={search}>
+    return <Layout search={search}
+            onSearch={(s)=>{
+                const f = {
+                    ...filterModel,
+                    search: s
+                }
+                debouncedSetFilter(f);
+            }}>
             <EnhancedTable 
                 data={cars}
                 total={total}
@@ -48,6 +56,22 @@ export default function MUIPage(){
                 page={page}
                 pageSize={size}
                 pageSizeOptions={pageSizeOptions} 
+
+                onPageChange={(p) => {
+                    const f = {
+                        ...filterModel,
+                        page: p
+                    }
+                    updateFilter(f);
+                }}
+
+                onPageSizeChange={(s) => {
+                    const f = {
+                        ...filterModel,
+                        limit: s
+                    }
+                    updateFilter(f);
+                }}
                 
                 onSort={(orderBy) => {
                     const f = setSort(orderBy);
@@ -60,6 +84,8 @@ export default function MUIPage(){
                     updateFilter(f);
                 }}/>
 
-            <p>Hello World!!</p>
+            <Paper sx={{width: "30%", padding: "10px", height: "fit-content"}}>
+                Filter Section
+            </Paper>
         </Layout>;
 }
