@@ -1,5 +1,6 @@
 import { columnDef } from "../model";
 import { FaArrowCircleUp, FaArrowCircleDown } from "react-icons/fa";
+import { MdDelete, MdEdit  } from "react-icons/md";
 
 export function TableHeader({columnDef, sort, order, actions=false, onSort=(key)=>key}){
     const action_col = <th>Actions</th>;
@@ -19,7 +20,7 @@ export function TableHeader({columnDef, sort, order, actions=false, onSort=(key)
 }
 
 export function TableRow({row, actions=false, onDelete=(id)=>{}, onEdit=(row)=>{}}){
-    const action_col = <td style={{display: "flex"}}><span className='btn btn-action' onClick={()=>onEdit(row)}>Edit</span> <span className="btn btn-action" onClick={()=>onDelete(row.id)}>Delete</span></td>;
+    const action_col = <td style={{display: "flex"}}><span className='btn btn-action' onClick={()=>onEdit(row)}><MdEdit size={20} /></span> <span className="btn btn-action" onClick={()=>onDelete(row.id)}><MdDelete size={20} /></span></td>;
     return (
         <tr>
             {

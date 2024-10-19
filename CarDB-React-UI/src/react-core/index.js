@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import Layout from "./Layout";
 import Table, {Paginator} from "./Table";
 import "./styles.css";
-import { filterModel, page_sizes } from "../model";
+import { filterModel, pageSizeOptions } from "../model";
 import { fetchCars, init_data, deleteCar, addCar, editCar } from "../fetch";
 import _ from "lodash";
 import { AddFormModal, EditFormModal } from "./Modal";
@@ -113,7 +113,7 @@ export default function Page1(){
                 <Paginator 
                     total={total} 
                     size={size} 
-                    page_sizes={page_sizes} 
+                    page_sizes={pageSizeOptions} 
                     page={page}  
                     onPageSizeChange={(n) => {                     
                             const f = {

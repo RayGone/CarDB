@@ -1,4 +1,5 @@
 import {downloadURL} from "../fetch";
+import { Link } from "react-router-dom";
 import { FaPlus, FaDownload } from "react-icons/fa";
 
 export default function Layout({children, search="", onSearchCar=(value)=>value , onAddCar=()=>{}}){
@@ -6,6 +7,8 @@ export default function Layout({children, search="", onSearchCar=(value)=>value 
         <div className="container">
             <header>
                 <h1><img className="logo" src="/car.jpg" alt="Logo - a Car" /> &nbsp;&nbsp; <span>CarDB</span></h1>
+
+                <span>Switch to: <Link to="/material">MaterialUI View</Link></span>
                 <div className="tab-buttons">
                     <input                  
                         placeholder="Search... [Name, Origin]"

@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import {
     CssBaseline, 
     Box, 
@@ -7,8 +8,7 @@ import {
     Toolbar,
     InputBase,
     Button,
-    Stack,
-    Link
+    Stack
 } from "@mui/material";
 
 import SearchIcon from "@mui/icons-material/Search";
@@ -65,14 +65,14 @@ export default function MUILayout({children, search="", onSearch, onAdd, onDownl
             <CssBaseline />            
                 
             <Box sx={{ flexGrow: 1 }}>
-                <AppBar position="static"> 
+                <AppBar position="static" sx={{backgroundColor: "#eff3f5"}}> 
                     <Toolbar sx={{flexDirection:"row", justifyContent:"space-between", width:"100%"}}>
                         <Stack direction="row" spacing={2} sx={{alignItems: "center"}}>
                             <IconButton aria-label="Logo" disableTouchRipple><img className="logo" src="/car.jpg" alt="Logo - a Car" /></IconButton>
                             <Typography component="div" variant="h5" sx={{ fontWeight:"bold", color: "rgb(170, 127, 255)", textShadow:"2px 2px 8px rgba(107, 113, 73, 0.8)"}}>CarDB</Typography>
                         </Stack>
 
-                        <Link href="/" color="#ffffff">Custom View</Link>
+                        <Box color="#333">Switch to: <Link to="/custom">Custom View</Link></Box>
                         
                         <Stack direction="row" spacing={1} sx={{alignItems: "center"}}>
                             <Search>
