@@ -1,11 +1,11 @@
 import { useState, useEffect, useMemo } from "react";
 import _, { update } from "lodash";
-import Layout from "./Layout";
+import MUILayout from "./Layout";
 import EnhancedTable from "./Table";
+import MUIFilter from "./Filter";
 import { fetchCars, init_data } from "../fetch";
 import { setFilterToStorage, getFilterFromStorage, sortObj, setSort } from "../util";
 import { pageSizeOptions } from "../model";
-import { Paper } from "@mui/material";
 
 export default function MUIPage(){
     const [data, setData] = useState(init_data);
@@ -40,7 +40,7 @@ export default function MUIPage(){
     const orderBy = filterModel.orderBy;
     const order = filterModel.order;
 
-    return <Layout search={search}
+    return <MUILayout search={search}
             onSearch={(s)=>{
                 const f = {
                     ...filterModel,
@@ -84,8 +84,16 @@ export default function MUIPage(){
                     updateFilter(f);
                 }}/>
 
-            <Paper sx={{width: "30%", padding: "10px", height: "fit-content"}}>
-                Filter Section
-            </Paper>
-        </Layout>;
+            <MUIFilter 
+                filters={conditions} onAdd={(c)=>{
+                    const cl = [...filterModel.filter, c]
+                    const f = {...filterModel, filter: cl}
+                    updateFilter(f);
+                }}
+                onDelete={(index)=>{
+                    const cl = conditions.filter((c,i)=> i!==index && c);
+                    const f = {...filterModel, filter: cl};
+                    updateFilter(f);
+                }}/>
+        </MUILayout>;
 }
