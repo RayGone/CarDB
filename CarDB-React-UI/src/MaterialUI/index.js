@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo } from "react";
-import _, { update } from "lodash";
+import _ from "lodash";
 import MUILayout from "./Layout";
 import EnhancedTable from "./Table";
 import MUIFilter from "./Filter";
-import { fetchCars, init_data } from "../fetch";
+import { fetchCars, init_data, deleteCar } from "../fetch";
 import { setFilterToStorage, getFilterFromStorage, sortObj, setSort } from "../util";
 import { pageSizeOptions } from "../model";
 
@@ -82,7 +82,18 @@ export default function MUIPage(){
                         return prev;
                     });
                     updateFilter(f);
-                }}/>
+                }}
+                
+                onDelete={
+                    (id) => {
+                        const car = data.cars.filter((c)=> c.id===id)[0].name.toUpperCase();
+                        if(window.confirm("Do you really want to delete this car: "+car)){
+                            deleteCar(id).then((response)=>{
+                                updateFilter(getFilterFromStorage());
+                            });;
+                        }
+                    }
+                }/>
 
             <MUIFilter 
                 filters={conditions} onAdd={(c)=>{

@@ -162,6 +162,7 @@ export default function MUIFilterLayout({filters=[], onAdd, onDelete}){
                                 if(filters.length>0) setIsAdd(false);
                             }} 
                             onSubmit={onAdd} />}
+                            
                 {filters.map(
                     (f, i) => <FilterDisplay 
                                 key={f.field+i} 
