@@ -3,13 +3,19 @@ import _ from "lodash";
 import MUILayout from "./Layout";
 import EnhancedTable from "./Table";
 import MUIFilter from "./Filter";
-import { fetchCars, init_data, deleteCar } from "../fetch";
+import { fetchCars, init_data, deleteCar, editCar, addCar } from "../fetch";
 import { setFilterToStorage, getFilterFromStorage, sortObj, setSort } from "../util";
 import { pageSizeOptions } from "../model";
+import { Snackbar } from "@mui/material";
+import FormDialog from "./Forms";
 
 export default function MUIPage(){
     const [data, setData] = useState(init_data);
     const [filterModel, setFilterModel] = useState(getFilterFromStorage());
+    const [toDelete, setToDelete] = useState(null);
+    const [openAddForm, setOpenAddForm] = useState(false);
+    const [openEditForm, setOpenEditForm] = useState(false);
+    const [editCarData, setEditCarData] = useState(null);
 
     function updateFilter(f){
         setFilterModel(f);
@@ -41,6 +47,7 @@ export default function MUIPage(){
     const order = filterModel.order;
 
     return <MUILayout search={search}
+            onAdd={()=>{setOpenAddForm(true)}}
             onSearch={(s)=>{
                 const f = {
                     ...filterModel,
@@ -86,14 +93,24 @@ export default function MUIPage(){
                 
                 onDelete={
                     (id) => {
-                        const car = data.cars.filter((c)=> c.id===id)[0].name.toUpperCase();
-                        if(window.confirm("Do you really want to delete this car: "+car)){
+                        const car = data.cars.filter((c)=> c.id===id)[0];
+                        if(window.confirm("Do you really want to delete this car: "+car.name.toUpperCase())){
+                            setToDelete(car)
                             deleteCar(id).then((response)=>{
                                 updateFilter(getFilterFromStorage());
-                            });;
+                                setToDelete(null);
+                            });
                         }
                     }
-                }/>
+                }
+                
+                onEdit={(id) => {
+                    const car = data.cars.filter((c)=> c.id===id);
+                    if(car.length){
+                        setEditCarData(car[0]);
+                        setOpenEditForm(true);
+                    }
+                }}/>
 
             <MUIFilter 
                 filters={conditions} onAdd={(c)=>{
@@ -106,5 +123,36 @@ export default function MUIPage(){
                     const f = {...filterModel, filter: cl};
                     updateFilter(f);
                 }}/>
+
+            <Snackbar 
+                key="DeleteSnackBar"
+                open={toDelete}
+                anchorOrigin={{vertical:"top",horizontal:"right"}}
+                autoHideDuration={8000}
+                message={<>Deleting car <b>{toDelete && toDelete.name.toUpperCase()}</b></>}
+            />
+
+            <FormDialog key="AddCar" 
+                open={openAddForm} 
+                onClose={()=>setOpenAddForm(false)}
+                onSubmit={(car) => {
+                    addCar(car).then((res) => {
+                        setOpenAddForm(false);
+                    })
+                }}/>
+            {(openEditForm && editCarData) &&
+                <FormDialog 
+                    key="EditCar" 
+                    init={editCarData} 
+                    open={openEditForm} 
+                    onClose={()=>setOpenEditForm(false)} 
+                    onSubmit={(car) => {
+                            editCar(car).then((res)=>{
+                                setOpenEditForm(false);
+                                setEditCarData(null);
+                                setFilterModel(getFilterFromStorage());
+                            });
+                        }
+                    } />}
         </MUILayout>;
 }

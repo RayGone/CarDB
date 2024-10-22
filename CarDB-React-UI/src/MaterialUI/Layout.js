@@ -37,7 +37,7 @@ export default function MUILayout({children, search, onSearch, onAdd, onDownload
                       
                       <Stack direction="row" spacing={1} sx={{alignItems: "center"}}>
                         <StyledSearch search={search} onSearch={onSearch}/>
-                        <Button startIcon={<AddIcon />} color="primary" variant="contained">Add Car</Button>
+                        <Button onClick={onAdd} startIcon={<AddIcon />} color="primary" variant="contained">Add Car</Button>
                         <Button href={downloadURL} startIcon={<DownloadIcon />} color="secondary" variant="contained">Download</Button>
                       </Stack>
                   </Toolbar>            

@@ -85,9 +85,11 @@ export default function Page1(){
                         }}
                         bottomHeader={true} actions={true} 
                         onDelete={(id)=>{
-                            deleteCar(id).then((response)=>{
-                                updateFilter(getFilter());
-                            });
+                            const car = data.cars.filter((car) => car.id === id)[0];
+                            if(window.confirm("Do you really want to delete car: " + car.name))
+                                deleteCar(id).then((response)=>{
+                                    updateFilter(getFilter());
+                                });
                         }}
                         onEdit={(row) => openEditCarDialog(row)}
                     />
