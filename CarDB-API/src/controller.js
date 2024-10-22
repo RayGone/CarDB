@@ -65,11 +65,11 @@ getCars = (req, res) => {
         cars = [...local_db];
 
         // --sorting;
-        cars.sort((carA, carB)=> {
-            const stat = order=='asc' ? carA[orderBy] > carB[orderBy] : carA[orderBy] < carB[orderBy]
-            if(stat) return 1;
-            return -1;
-        })
+        cars.sort((carA, carB) => {
+            if(carA[orderBy] === carB[orderBy]) return 0;
+            const cond = order === "asc" ? carA[orderBy] > carB[orderBy] : carA[orderBy] < carB[orderBy];
+            return cond ? 1 : -1;
+        });
 
         // --searching;
         if(search != ""){

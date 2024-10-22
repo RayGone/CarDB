@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import Layout from "./Layout";
 import Table, {Paginator} from "./Table";
 import "./styles.css";
-import { filterModel, page_sizes } from "../model";
+import { filterModel, pageSizeOptions } from "../model";
 import { fetchCars, init_data, deleteCar, addCar, editCar } from "../fetch";
 import _ from "lodash";
 import { AddFormModal, EditFormModal } from "./Modal";
@@ -29,7 +29,6 @@ export default function Page1(){
     const debouncedSetFilter = useMemo(()=>_.debounce(updateFilter, 100), []); //Limit Search and Page change;
 
     useEffect(() => {
-        console.log("Calling Effect", currFilterModel);
         fetchCars(currFilterModel, (batch) => {
             setData(prev=>batch);
 
@@ -73,14 +72,24 @@ export default function Page1(){
                                 ...currFilterModel,
                                 orderBy: key,
                                 order: changedOrder
-                            };
+                            };                            
+                            cars.sort((carA, carB) => {
+                                if(carA[f.orderBy] === carB[f.orderBy]) return 0;
+                                const cond = f.order === "asc" ? carA[f.orderBy] > carB[f.orderBy] : carA[f.orderBy] < carB[f.orderBy];
+                                return cond ? 1 : -1;
+                            });
+                            const sortedData = {...data, cars: cars};
+                            setData(sortedData);
+
                             updateFilter(f);
                         }}
                         bottomHeader={true} actions={true} 
                         onDelete={(id)=>{
-                            deleteCar(id).then((response)=>{
-                                updateFilter(getFilter());
-                            });
+                            const car = data.cars.filter((car) => car.id === id)[0];
+                            if(window.confirm("Do you really want to delete car: " + car.name))
+                                deleteCar(id).then((response)=>{
+                                    updateFilter(getFilter());
+                                });
                         }}
                         onEdit={(row) => openEditCarDialog(row)}
                     />
@@ -106,7 +115,7 @@ export default function Page1(){
                 <Paginator 
                     total={total} 
                     size={size} 
-                    page_sizes={page_sizes} 
+                    page_sizes={pageSizeOptions} 
                     page={page}  
                     onPageSizeChange={(n) => {                     
                             const f = {
