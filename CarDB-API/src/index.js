@@ -1,9 +1,8 @@
 require('dotenv').config()
 const express = require('express');
 const cors = require('cors');
-const {connect, initData} = require("./db-init.js");
-
-const routes = require("./router.js");
+const {connect, initData} = require("./firestore/db-init.js");
+const routes = require("./firestore/router.js");
 
 const PORT = process.env.PORT || 3000;
 const app = express();
