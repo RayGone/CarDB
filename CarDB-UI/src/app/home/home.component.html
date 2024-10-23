@@ -68,9 +68,9 @@
         <ng-container *ngFor="let filter of filterModel.filter;">
           <div class="flexRow flexJustifySpaceBetween flexAlignCenter">
             <div class="filter-desc">
-              <strong>{{ filter.field | titlecase}}</strong><br>
-              {{ filter.ops | opName}}<br>
-              <strong>{{ filter.value }}</strong>
+              <strong style="margin-top: 10px">{{ filter.field | titlecase}}</strong><br>
+              <b>{{ filter.ops | opName}}</b><br>
+              <span>{{ filter.value }}</span>
             </div>
             <button mat-icon-button color="warn" (click)="deleteFilter(filter)">
               <mat-icon>delete</mat-icon>

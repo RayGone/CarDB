@@ -4,7 +4,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject } from 'rxjs';
-import { Car, baseUrl } from '../../model';
+import { Car, baseUrl, columnDef } from '../../model';
 
 @Component({
   selector: 'app-edit-car-dialog',
@@ -20,10 +20,12 @@ export class EditCarDialogComponent {
       this.editForm.patchValue(data);
     }
 
+  public property = columnDef;
+
   public editForm: FormGroup = new FormGroup({
     name: new FormControl("", Validators.required),
-    origin: new FormControl(),
-    model_year: new FormControl(),
+    origin: new FormControl("", Validators.required),
+    model_year: new FormControl(null, Validators.required),
     acceleration: new FormControl(),
     horsepower: new FormControl(),
     mpg: new FormControl(),
