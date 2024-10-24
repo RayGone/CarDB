@@ -53,6 +53,7 @@ header>h1 {
 }
 
 .body {
+  box-sizing: border-box;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -60,7 +61,6 @@ header>h1 {
   overflow: auto;
   width: 100%;
   padding: 5px 10px;
-  margin-top: 10px;
 }
 
 table {
@@ -84,30 +84,26 @@ tr:hover {
   background-color: rgba(111, 207, 175, 0.2);
 }
 
-section {
+section{
   width: 75vw;
   overflow: auto;
   padding: 2px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  margin: 5px
+  margin-right: 5px
 }
 
-aside {
-  width: 20vw;
+aside{
+  width: 24vw;
+  min-width: 250px;
   padding: 5px;
   height: 60vh;
   overflow: auto;
-  margin: 5px;
-}
-
-.filter-body {
-  display: flex;
-  flex-direction: column;
-  justify-content: start;
-  margin-top: 5px;
+  margin-left: 5px;
 }
 
 footer {
+  box-sizing: border-box;
+  width: 100%;
   background-color: #f8f9fa;
   padding: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -116,15 +112,25 @@ footer {
   z-index: 1000;
 }
 
+.filter-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  margin-top: 5px;
+  padding: 10px;
+}
+
 .filter-desc {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   box-shadow: 1px 1px 5px #ccc;
-  padding: 5px;
+  border-radius: 5px;
+  padding: 10px 20px;
   margin: 2px;
   min-width: 120px;
+  width: 70%;
 }
 
 .tab-buttons {
