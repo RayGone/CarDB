@@ -1,7 +1,7 @@
 const sqlite3 = require('sqlite3').verbose();
 
 const getDBInstance = () => {
-    const db = new sqlite3.cached.Database(process.env.SQLITE_DB_NAME);
+    const db = new sqlite3.Database(process.env.SQLITE_DB_NAME);
     return db;
 }
 
@@ -55,7 +55,7 @@ function query(filterModel, callback=(e,r)=>{}){
             if(i!=0 || search) sql += " AND";
         }
 
-        if(search!="" || search!=null){
+        if(search!="" && search!=null){
             search = (search+"").toLowerCase();
             sql+=` (LOWER(name) like '%${search}%' OR LOWER(origin) like '%${search}%')`;
         }
@@ -71,9 +71,14 @@ function query(filterModel, callback=(e,r)=>{}){
     offset = filterModel?.page ? filterModel?.page * limit : 0;
     sql += ` OFFSET ${offset}`;
 
-    console.log(sql)
+    // console.log(sql)
     const db = getDBInstance();
-    db.all(sql, callback);
+    db.serialize(() => {
+        db.all(sql, (e,r)=>{
+            callback(e,r);
+        });
+    });
+    db.close();
 }
 
 module.exports = {getDBInstance, initDB, query}
