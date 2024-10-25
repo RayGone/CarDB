@@ -2,16 +2,26 @@ require('dotenv').config()
 const express = require('express');
 const cors = require('cors');
 const {connect, initData} = require("./firestore/db-init.js");
-const routes = require("./firestore/router.js");
+const {initDB} = require("./sqlite/db.js")
+const fire_routes = require("./firestore/router.js");
+const sqlite_routes = require("./sqlite/router.js");
 
 const PORT = process.env.PORT || 3000;
 const app = express();
 
-connect(); // Initialize Firebase
-initData(); // Initialize data
+console.log(process.env.USE_API);
+const routes = process.env.USE_API === "firestore" ? fire_routes : sqlite_routes;
+
+if(process.env.USE_API === "firestore"){
+    connect(); // Initialize Firebase
+    initData(); // Initialize data
+}else{
+    initDB();
+}
 
 app.use(cors());
 app.use(express.json());
+
 app.use("/api/", routes);
 
 // const { swaggerDocs } = require("./swagger");
