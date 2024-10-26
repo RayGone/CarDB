@@ -5,6 +5,27 @@ const getDBInstance = () => {
     return db;
 }
 
+const insertCar = (carObj, callback=(e)=>{}) => {
+    const sql = `INSERT INTO ${process.env.SQLITE_TABLE_NAME} (${Object.keys(carObj).join(", ")}) VALUES (?,?,?,?,?,?,?,?,?,?)`;
+    db.run(sql, Object.values(carObj), callback);
+}
+
+const updateCar = (carObj, callback=(e)=>{}) => {
+    const sql = `UPDATE ${process.env.SQLITE_TABLE_NAME} SET `;
+    Object.keys(carObj).forEach((key) => {
+        if(key!='id'){
+            sql+= `${key}=?, `;
+        }
+    })
+    sql+=` id=? WHERE id=${carObje['id']}`;
+    db.run(sql, Object.values(carObj), callback);
+}
+
+const deleteCar = (carId, callback=(e)=>{})=>{
+    const sql = `DELETE FROM ${process.env.SQLITE_TABLE_NAME} WHERE id=?`;
+    db.run(sql, carId, callback);
+}
+
 const initDB = () => {
     console.log("Initializing Database -----");
     const db = getDBInstance();
@@ -26,7 +47,7 @@ const initDB = () => {
                     sql = `INSERT INTO ${process.env.SQLITE_TABLE_NAME} (${Object.keys(init_data[0]).join(", ")}) VALUES (?,?,?,?,?,?,?,?,?,?)`;
                     
                     for(let row of init_data){
-                        db.run(sql, Object.values(row), (err)=>{
+                       insertCar(row,(err)=>{
                             if(err!=null) console.log("Error Occurred", err, sql, row);
                         });
                     }
@@ -41,22 +62,27 @@ const initDB = () => {
     });
 }
 
-function query(filterModel, callback=(e,r)=>{}){
+function queryCar(filterModel, callback=(e,r)=>{}){
     let sql = `SELECT * FROM ${process.env.SQLITE_TABLE_NAME}`;
 
     let conditions = " ";
 
-    search = filterModel?.search;
-    if(filterModel?.filter.length > 0 || search!=""){
+    
+    if(filterModel?.filter || filterModel?.search){
         conditions += " WHERE";
+    }
 
+    if(filterModel?.filter && filterModel?.filter?.length > 0){
         let i=filterModel?.filter.length;
         for(let filter of filterModel?.filter){
             conditions += ` ${filter.field}${filter.ops}${filter.value}`;
             i-=1;
             if(i!=0 || search) conditions += " AND";
         }
+    }
 
+    search = filterModel?.search;
+    if(search && search!=""){
         if(search!="" && search!=null){
             search = (search+"").toLowerCase();
             conditions+=` (LOWER(name) like '%${search}%' OR LOWER(origin) like '%${search}%')`;
@@ -94,4 +120,4 @@ function query(filterModel, callback=(e,r)=>{}){
     });
 }
 
-module.exports = {getDBInstance, initDB, query}
+module.exports = {getDBInstance, initDB, queryCar, insertCar, updateCar, deleteCar}

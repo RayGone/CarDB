@@ -1,15 +1,15 @@
-const {getDBInstance, query} = require("./db");
+const {getDBInstance, queryCar} = require("./db");
 const db = getDBInstance();
 
-const getCars = async (req, res) => {   
+const getCars = async (req, res) => {  
     if(Object.keys(req.query).length > 0){       
-        query(req.query,(e,r)=>{
+        queryCar({...req.query},(e,r)=>{
             if(e!=null) res.status(500).send(e);
             else if (r==null) res.json({cars:[],total:0});
             else res.json(r);
         });
     }else     
-        query(req.body,(e,r)=>{
+        queryCar(req.body,(e,r)=>{
             if(e!=null) res.status(500).send(e);
             else if (r==null) res.json({cars:[],total:0});
             else res.json(r);
