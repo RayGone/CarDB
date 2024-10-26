@@ -226,8 +226,72 @@ router.post("/filterSearch", controller.getCars);
  * 
  */
 router.post("/add", controller.addCars);
-// router.patch("/edit/:id", controller.editCars);
-// router.delete("/delete/:id", controller.deleteCars);
+
+/**
+ * @swagger
+ * /api/edit/{id}:
+ *      patch:
+ *          summary: Edit Car - Update the entry
+ *          tags: 
+ *              - Cars
+ *          parameters:
+ *              -   in: path
+ *                  name: id
+ *                  schema:
+ *                      type: number
+ *                      example: 1
+ *                  description: ID of car entry to be updated
+ *          requestBody:
+ *              required: true
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          $ref: '#/components/schemas/Car'
+ *                      example: {"id":1,"name":"chevrolet chevelle malibu","mpg":18.0,"cylinders":8,"displacement":307.0,"horsepower":130.0,"weight":3504,"acceleration":12.0,"model_year":70,"origin":"usa"}
+ *          responses:
+ *              200:
+ *                  description: Car Edited Successfully
+ *                  content:
+ *                      application/json:
+ *                          schema:
+ *                              type: object
+ *                              properties:
+ *                                  id:
+ *                                      type: number
+ *                                      example: 1
+ *              500:
+ *                  description: Internal Server Error
+ */
+router.patch("/edit/:id", controller.editCars);
+
+/**
+ * @swagger
+ * /api/delete/{id}:
+ *      delete:
+ *          summary: Delete Car
+ *          tags:
+ *              - Cars
+ *          parameters:
+ *              -   in: path
+ *                  name: id
+ *                  schema:
+ *                      type: number
+ *                      example: 1   
+ *          responses:
+ *              200:
+ *                  description: Car Deleted Successfully
+ *                  content:
+ *                      application/json:
+ *                          schema:
+ *                              type: object
+ *                              properties:
+ *                                  id:
+ *                                      type: number
+ *                                      example: 1
+ *              500:
+ *                  description: Internal Server Error        
+ */
+router.delete("/delete/:id", controller.deleteCars);
 
 /**
  * @swagger

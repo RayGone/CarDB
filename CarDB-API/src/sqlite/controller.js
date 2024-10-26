@@ -1,4 +1,4 @@
-const {getDBInstance, queryCar, insertCar, getLastRowId} = require("./db");
+const {getDBInstance, queryCar, insertCar, updateCar, removeCar} = require("./db");
 const db = getDBInstance();
 
 /*
@@ -45,7 +45,7 @@ const addCars = (req, res) => {
     data = {...req.body};
     insertCar(data, (e, r)=>{
         if(e==null){
-            res.send(r);
+            res.json(r);
         }
         else{
             console.log("Insert Error", e);
@@ -54,5 +54,43 @@ const addCars = (req, res) => {
     });
 }
 
+/*
+ * =================================================================================================
+ * Edit Cars Controller
+ */
+const editCars = (req, res) => {
+    const data = {...req.body};
+    const id = parseInt(req.params.id);
 
-module.exports = {getCars, getTotalCars, addCars}
+    updateCar(data, (e, r)=>{
+        if(e==null){
+            res.json({id: r.id});
+        }
+        else{
+            console.log("Update Error", e);
+            res.status(500).send("Internal Server Error");
+        }
+    });
+}
+
+/*
+ * =================================================================================================
+ * De;ete Cars Controller
+ */
+const deleteCars = (req, res) => {
+    const data = {...req.body};
+    const id = parseInt(req.params.id);
+
+    removeCar(id, (e)=>{
+        if(e==null){
+            res.json({id: id});
+        }
+        else{
+            console.log("Delete Error", e);
+            res.status(500).send("Internal Server Error");
+        }
+    });
+}
+
+
+module.exports = {getCars, getTotalCars, addCars, editCars, deleteCars}

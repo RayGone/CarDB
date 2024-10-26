@@ -38,7 +38,7 @@ const updateCar = (carObj, callback=(e)=>{}) => {
     db.serialize(() => db.run(sql, Object.values(carObj), callback));
 }
 
-const deleteCar = (carId, callback=(e)=>{})=>{
+const removeCar = (carId, callback=(e)=>{})=>{
     const db = getDBInstance();
     const sql = `DELETE FROM ${process.env.SQLITE_TABLE_NAME} WHERE id=?`;
     db.serialize(() => db.run(sql, carId, callback));
@@ -141,4 +141,4 @@ function queryCar(filterModel, callback=(e,r)=>{}){
     });
 }
 
-module.exports = {getDBInstance, initDB, getLastRowId, queryCar, insertCar, updateCar, deleteCar}
+module.exports = {getDBInstance, initDB, getLastRowId, queryCar, insertCar, updateCar, removeCar}
