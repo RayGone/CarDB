@@ -9,7 +9,6 @@ const sqlite_routes = require("./sqlite/router.js");
 const PORT = process.env.PORT || 3000;
 const app = express();
 
-console.log(process.env.USE_API);
 const routes = process.env.USE_API === "firestore" ? fire_routes : sqlite_routes;
 
 if(process.env.USE_API === "firestore"){

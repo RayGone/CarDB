@@ -44,22 +44,26 @@ const initDB = () => {
 function query(filterModel, callback=(e,r)=>{}){
     let sql = `SELECT * FROM ${process.env.SQLITE_TABLE_NAME}`;
 
+    let conditions = " ";
+
     search = filterModel?.search;
     if(filterModel?.filter.length > 0 || search!=""){
-        sql += " WHERE";
+        conditions += " WHERE";
 
         let i=filterModel?.filter.length;
         for(let filter of filterModel?.filter){
-            sql += ` ${filter.field}${filter.ops}${filter.value}`;
+            conditions += ` ${filter.field}${filter.ops}${filter.value}`;
             i-=1;
-            if(i!=0 || search) sql += " AND";
+            if(i!=0 || search) conditions += " AND";
         }
 
         if(search!="" && search!=null){
             search = (search+"").toLowerCase();
-            sql+=` (LOWER(name) like '%${search}%' OR LOWER(origin) like '%${search}%')`;
+            conditions+=` (LOWER(name) like '%${search}%' OR LOWER(origin) like '%${search}%')`;
         }
     }
+
+    sql += conditions;
 
     if(filterModel?.orderBy){
         const order = filterModel?.order ? filterModel?.order : 'asc';
@@ -74,11 +78,20 @@ function query(filterModel, callback=(e,r)=>{}){
     // console.log(sql)
     const db = getDBInstance();
     db.serialize(() => {
-        db.all(sql, (e,r)=>{
-            callback(e,r);
+        db.all(sql, (e,cars)=>{
+            if(cars==null) callback({}, {cars: [], total: 0});
+            else{
+                sql = "SELECT count(*) as total FROM "+process.env.SQLITE_TABLE_NAME+conditions;
+                db.serialize(()=>{
+                    db.get(sql, (err, count) =>{
+                        if(err==null && count!=null){
+                            callback(err, {cars: cars, total: count['total']});
+                        }
+                    });
+                });
+            }
         });
     });
-    db.close();
 }
 
 module.exports = {getDBInstance, initDB, query}
