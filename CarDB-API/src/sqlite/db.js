@@ -5,12 +5,29 @@ const getDBInstance = () => {
     return db;
 }
 
-const insertCar = (carObj, callback=(e)=>{}) => {
-    const sql = `INSERT INTO ${process.env.SQLITE_TABLE_NAME} (${Object.keys(carObj).join(", ")}) VALUES (?,?,?,?,?,?,?,?,?,?)`;
-    db.run(sql, Object.values(carObj), callback);
+const insertCar = (carObj, callback=(e, r)=>{}) => {
+    const db = getDBInstance();
+    const sql = `INSERT INTO ${process.env.SQLITE_TABLE_NAME} (${Object.keys(carObj).join(", ")}) VALUES (?,?,?,?,?,?,?,?,?)`;
+    db.serialize(()=> db.run(sql, 
+        Object.values(carObj), (e) => {
+            if(e==null){                
+                const q = `SELECT last_insert_rowid() as id`;
+                db.get(q, [], callback)
+            }else{
+                callback(e, null)
+            }
+        }
+    ));
 }
 
+const getLastRowId = (callback=(e, rowId)) => {
+    const db = getDBInstance();
+    const sql = `SELECT last_insert_rowid() as rowid`;
+    db.serialize(() => db.get(sql, [], callback));
+};
+
 const updateCar = (carObj, callback=(e)=>{}) => {
+    const db = getDBInstance();
     const sql = `UPDATE ${process.env.SQLITE_TABLE_NAME} SET `;
     Object.keys(carObj).forEach((key) => {
         if(key!='id'){
@@ -18,12 +35,13 @@ const updateCar = (carObj, callback=(e)=>{}) => {
         }
     })
     sql+=` id=? WHERE id=${carObje['id']}`;
-    db.run(sql, Object.values(carObj), callback);
+    db.serialize(() => db.run(sql, Object.values(carObj), callback));
 }
 
 const deleteCar = (carId, callback=(e)=>{})=>{
+    const db = getDBInstance();
     const sql = `DELETE FROM ${process.env.SQLITE_TABLE_NAME} WHERE id=?`;
-    db.run(sql, carId, callback);
+    db.serialize(() => db.run(sql, carId, callback));
 }
 
 const initDB = () => {
@@ -37,7 +55,7 @@ const initDB = () => {
                 horsepower REAL, weight REAL, acceleration REAL, displacement REAL
             )
             STRICT`;
-        db.run(sql, (err)=>{
+        db.run(sql, [], (err)=>{
             sql = "SELECT count(*) FROM ?";
             db.each(sql, process.env.SQLITE_TABLE_NAME, (err, row) => {
                 if(row != null) {                
@@ -67,32 +85,35 @@ function queryCar(filterModel, callback=(e,r)=>{}){
 
     let conditions = " ";
 
+
+    const search = filterModel?.search;
+    const isSearch = search && search!="" && search!=null;
     
-    if(filterModel?.filter || filterModel?.search){
+    const filter = filterModel?.filter;
+    const isModel = filter && filter?.length;
+    
+    if(isModel || isSearch){
         conditions += " WHERE";
     }
 
-    if(filterModel?.filter && filterModel?.filter?.length > 0){
-        let i=filterModel?.filter.length;
-        for(let filter of filterModel?.filter){
-            conditions += ` ${filter.field}${filter.ops}${filter.value}`;
+    if(isModel){
+        let i=filter.length;
+        for(let f of filter){
+            conditions += ` ${f.field}${f.ops}${f.value}`;
             i-=1;
-            if(i!=0 || search) conditions += " AND";
+            if(i!=0 || isSearch) conditions += " AND";
         }
     }
 
-    search = filterModel?.search;
-    if(search && search!=""){
-        if(search!="" && search!=null){
-            search = (search+"").toLowerCase();
-            conditions+=` (LOWER(name) like '%${search}%' OR LOWER(origin) like '%${search}%')`;
-        }
+    if(isSearch){
+        search = (search+"").toLowerCase();
+        conditions+=` (LOWER(name) like '%${search}%' OR LOWER(origin) like '%${search}%')`;
     }
 
     sql += conditions;
 
     if(filterModel?.orderBy){
-        const order = filterModel?.order ? filterModel?.order : 'asc';
+        const order = (filterModel?.order ? filterModel?.order : 'asc').toUpperCase();
         sql += ` ORDER BY ${filterModel?.orderBy} ${order}`;
     }
 
@@ -101,15 +122,15 @@ function queryCar(filterModel, callback=(e,r)=>{}){
     offset = filterModel?.page ? filterModel?.page * limit : 0;
     sql += ` OFFSET ${offset}`;
 
-    // console.log(sql)
     const db = getDBInstance();
     db.serialize(() => {
-        db.all(sql, (e,cars)=>{
+        db.all(sql, [], (e,cars)=>{
+            if(e!=null) console.log("Query Error:", e);
             if(cars==null) callback({}, {cars: [], total: 0});
             else{
                 sql = "SELECT count(*) as total FROM "+process.env.SQLITE_TABLE_NAME+conditions;
                 db.serialize(()=>{
-                    db.get(sql, (err, count) =>{
+                    db.get(sql, [], (err, count) =>{
                         if(err==null && count!=null){
                             callback(err, {cars: cars, total: count['total']});
                         }
@@ -120,4 +141,4 @@ function queryCar(filterModel, callback=(e,r)=>{}){
     });
 }
 
-module.exports = {getDBInstance, initDB, queryCar, insertCar, updateCar, deleteCar}
+module.exports = {getDBInstance, initDB, getLastRowId, queryCar, insertCar, updateCar, deleteCar}

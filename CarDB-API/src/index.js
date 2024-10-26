@@ -23,9 +23,9 @@ app.use(express.json());
 
 app.use("/api/", routes);
 
-// const { swaggerDocs } = require("./swagger");
+const { swaggerDocs } = require("./swagger");
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
-    // swaggerDocs(app, PORT);
+    swaggerDocs(app, PORT);
 });
