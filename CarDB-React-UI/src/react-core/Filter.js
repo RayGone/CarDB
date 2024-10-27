@@ -30,7 +30,11 @@ export default function Filter({filters=[], onAddFilter=(f)=>{}, onRemoveFilter=
             {
                 addFilter && (
                     <div className="flexRow flexAlignCenter">
-                        <div className="flexCol flexAlignCenter"  style={{border: "1px solid brown", width: "80%", padding:"10px", margin:"10px", borderRadius: "10px"}}>
+                        <div className="flexCol flexAlignCenter"  
+                            style={{border: "1px solid #ccc", width: "80%",
+                                    padding:"10px", margin:"10px",
+                                    borderRadius: "5px", boxShadow:"2px 2px 3px #ccc, -1px -1px 1px #8885"}}
+                        >
                             <select className="select" defaultValue={filterAttr} onChange={(e) => {setFilterAttr(e.target.value)}}>
                                 <option value="-1">Select Attribute</option>
                                 {filterAttributes.map((attr) => <option value={attr.key} key={attr.key}>{attr.header}</option>)}
@@ -41,7 +45,7 @@ export default function Filter({filters=[], onAddFilter=(f)=>{}, onRemoveFilter=
                                 {filterOps.map((attr) => <option value={attr.key} key={attr.key}>{attr.value}</option>)}
                             </select>
                             
-                            <input className="input input-number" style={{width: "60%", padding: "10px 20px"}} type="number" defaultValue={filterValue} onChange={(e) => {setFilterValue(parseInt(e.target.value))}} />
+                            <input className="input-number form-control input" type="number" defaultValue={filterValue} onChange={(e) => {setFilterValue(parseInt(e.target.value))}} />
                         </div>
                         <div className="flexCol flexAlignCenter">
                             <span onClick={()=>openAddFilter(!addFilter)}><FaPlus style={{color:"red", transform: "rotate(45deg)", cursor: "pointer"}}/></span>
@@ -60,11 +64,11 @@ export default function Filter({filters=[], onAddFilter=(f)=>{}, onRemoveFilter=
                     const opsModel = filterOps.filter((ops)=> ops.key===filter.ops);
                     const opValue = opsModel[0].value;
                     return (
-                        <div className="flexRow flexAlignCenter" key={index}>
+                        <div className="flexRow flexAlignCenter" style={{justifyContent:"space-between", lineHeight:"1.5"}} key={index}>
                             <div className="filter-desc">
-                                <strong>{attrKey}</strong><br />
+                                <strong style={{fontSize: "1.3em"}}>{attrKey}</strong><br />
                                 <span>{opValue}</span><br />
-                                <strong>{filter.value}</strong>
+                                <small><b>{filter.value}</b></small>
                             </div>
                             <span style={{margin:"10px", color: "red"}} onClick={()=>onRemoveFilter(index)}><FaTrash /></span>
                         </div>

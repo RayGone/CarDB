@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Car } from '../../model';
+import { Car, columnDef } from '../../model';
 import { Subject } from 'rxjs';
 
 @Component({
@@ -17,10 +17,11 @@ export class AddCarDialogComponent {
     public snackBar: MatSnackBar,
     public http: HttpClient) {}
 
+  public property = columnDef;
   public addForm: FormGroup = new FormGroup({
     name: new FormControl("", Validators.required),
-    origin: new FormControl(),
-    model_year: new FormControl(),
+    origin: new FormControl("", Validators.required),
+    model_year: new FormControl(null, Validators.required),
     acceleration: new FormControl(),
     horsepower: new FormControl(),
     mpg: new FormControl(),

@@ -5,39 +5,20 @@
 
   <mat-card-content class="body">
     <form class="form" [formGroup]="addForm">
-      <mat-form-field class="input">
-        <input matInput placeholder="Name" formControlName="name" />
-      </mat-form-field>
-      <mat-form-field class="input">
-        <input matInput placeholder="Origin" formControlName="origin" />
-      </mat-form-field>
-      <mat-form-field class="input">
-        <input matInput placeholder="Model Year" type="number" formControlName="model_year" />
-      </mat-form-field>
-      <mat-form-field class="input">
-        <input matInput placeholder="Acceleration"  type="number" formControlName="acceleration" />
-      </mat-form-field>
-      <mat-form-field class="input">
-        <input matInput placeholder="Horsepower" type="number" formControlName="horsepower" />
-      </mat-form-field>
-      <mat-form-field class="input">
-        <input matInput placeholder="MPG" type="number" formControlName="mpg" />
-      </mat-form-field>
-      <mat-form-field class="input">
-        <input matInput placeholder="Weight" type="number" formControlName="weight" />
-      </mat-form-field>
-      <mat-form-field class="input">
-        <input matInput placeholder="Cylinders" type="number" formControlName="cylinders" />
-      </mat-form-field>
-      <mat-form-field class="input">
-        <input matInput placeholder="Displacement"  type="number" formControlName="displacement" />
-      </mat-form-field>
+      @for(col of property; track col.key){
+        @if(col.key !== "id"){
+          <mat-form-field class="input" appearance="outline">
+            <mat-label>{{col.header}}</mat-label>
+            <input matInput placeholder={{col.header}} type={{col.type}} formControlName={{col.key}} />
+          </mat-form-field>
+        }
+      }
     </form>
   </mat-card-content>
 
   <mat-card-footer class="footer">
-    <button mat-raised-button color="primary" type="submit" (click)="submit()">Add</button>
+    <button mat-raised-button color="primary" type="submit" (click)="submit()">Submit<mat-icon>send</mat-icon></button>
     <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
-    <button mat-raised-button color="warn" (click)="close()">Cancel</button>
+    <button mat-raised-button color="warn" (click)="close()">Cancel <mat-icon>close</mat-icon></button>
   </mat-card-footer>
 </mat-card>

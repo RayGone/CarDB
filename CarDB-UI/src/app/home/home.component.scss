@@ -50,12 +50,14 @@ header > h1{
 }
 
 .body{
+  box-sizing: border-box;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   // height: 100%;
   overflow: auto;
   width: 100%;
+  padding: 5px;
 }
 
 th{
@@ -75,18 +77,12 @@ section{
 }
 
 aside{
-  width: 20vw;
+  width: 24vw;
+  min-width: 250px;
   padding: 5px;
   height: 60vh;
   overflow: auto;
   margin: 5px;
-}
-
-.filter-body{
-  display: flex;
-  flex-direction: column;
-  justify-content: start;
-  margin-top: 5px;
 }
 
 footer{
@@ -98,6 +94,13 @@ footer{
   z-index: 1000;
 }
 
+.filter-body{
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  margin-top: 5px;
+}
+
 .filter-desc{
   display: flex;
   flex-direction: column;
@@ -106,5 +109,13 @@ footer{
   box-shadow: 1px 1px 5px #ccc;
   padding: 5px;
   margin: 2px;
-  min-width: 120px;
+  width: 60%
+}
+
+.filter-desc > b{
+  font-weight: lighter;
+}
+
+.filter-desc > strong{
+  font-size: 1.5em;
 }
