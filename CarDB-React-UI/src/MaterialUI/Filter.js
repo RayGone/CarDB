@@ -159,9 +159,9 @@ export default function MUIFilterLayout({filters=[], onAdd, onDelete}){
             <Stack width={"100%"} spacing={3} sx={{mx: "5px", mt: "10px"}}>
                 {isAdd && <AddFilterForm 
                             onClose={()=>{
-                                if(filters.length>0) setIsAdd(false);
+                                setIsAdd(false);
                             }} 
-                            onSubmit={onAdd} />}
+                            onSubmit={(f)=>{onAdd(f); setIsAdd(false);}} />}
                             
                 {filters.map(
                     (f, i) => <FilterDisplay 

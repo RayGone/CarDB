@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const controller = require("./controller");
+
+const controller_path = `./${process.env.USE_API}/controller`;
+const controller = require(controller_path);
 
 //================================
 ///----- Swagger Schemas
