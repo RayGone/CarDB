@@ -1,20 +1,17 @@
 require('dotenv').config()
 const express = require('express');
 const cors = require('cors');
-const {connect, initData} = require("./firestore/db-init.js");
-const {initDB} = require("./sqlite/db.js")
-const fire_routes = require("./firestore/router.js");
-const sqlite_routes = require("./sqlite/router.js");
+const routes = require("./router.js");
 
 const PORT = process.env.PORT || 3000;
 const app = express();
 
-const routes = process.env.USE_API === "firestore" ? fire_routes : sqlite_routes;
-
 if(process.env.USE_API === "firestore"){
+    const {connect, initData} = require("./firestore/db-init.js");
     connect(); // Initialize Firebase
     initData(); // Initialize data
 }else{
+    const {initDB} = require("./sqlite/db.js")
     initDB();
 }
 
