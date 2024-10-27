@@ -214,6 +214,8 @@ router.post("/filterSearch", controller.getCars);
  *                                  id:
  *                                      type: number
  *                                      example: 0
+ *              400:
+ *                  description: Required field/parameter not provided
  *              500:
  *                  description: Internal Server Error
  *          requestBody:
@@ -241,6 +243,7 @@ router.post("/add", controller.addCars);
  *                      type: number
  *                      example: 1
  *                  description: ID of car entry to be updated
+ *                  required: true
  *          requestBody:
  *              required: true
  *              content:
@@ -259,6 +262,8 @@ router.post("/add", controller.addCars);
  *                                  id:
  *                                      type: number
  *                                      example: 1
+ *              400:
+ *                  description: Required field/parameter not provided
  *              500:
  *                  description: Internal Server Error
  */
@@ -288,6 +293,8 @@ router.patch("/edit/:id", controller.editCars);
  *                                  id:
  *                                      type: number
  *                                      example: 1
+ *              400:
+ *                  description: Required field/parameter not provided
  *              500:
  *                  description: Internal Server Error        
  */
@@ -312,7 +319,74 @@ router.delete("/delete/:id", controller.deleteCars);
  */
 router.get("/total", controller.getTotalCars);
 
-// router.get("/download/", controller.download);
-// router.get("/download/:type", controller.download);
+/**
+ * @swagger
+ * /api/download:
+ *      get:
+ *          summary: Download a CSV file
+ *          tags:
+ *              - Cars
+ *          parameters:
+ *              -   in: query
+ *                  name: type
+ *                  schema:
+ *                      type: string
+ *                      enum: ['csv', 'json']
+ *                      default: 'csv'
+ *                  description: file type
+ *          responses:
+ *              200:
+ *                  description: File Downloaded Successfully
+ *                  content:
+ *                      text/csv:
+ *                          schema:
+ *                              type: string
+ *                              format: binary
+ *                          example: "id, name, origin, model_year, acceleration, horsepower, mpg, weight, cylinders, displacement\n1, car name, usa, 24, 12.0, 130.0, 18.0 , 3504, 8, 307.0"
+ *                      application/json:
+ *                          schema:
+ *                              type: array
+ *                              items:
+ *                                  $ref: '#/components/schemas/Car'
+ *                          example: [{"id":1,"name":"chevrolet chevelle malibu","mpg":18.0,"cylinders":8,"displacement":307.0,"horsepower":130.0,"weight":3504,"acceleration":12.0,"model_year":70,"origin":"usa"}]
+ *              500:
+ *                  description: Internal Server Error
+ */
+router.get("/download/", controller.download);
+
+/**
+ * @swagger
+ * /api/download/{:type}:
+ *      get:
+ *          summary: Download a file
+ *          tags:
+ *              - Cars
+ *          parameters:
+ *              -   in: path
+ *                  name: type
+ *                  schema:
+ *                      type: string
+ *                      enum: ['csv', 'json']
+ *                      default: 'csv'
+ *                  description: file type
+ *          responses:
+ *              200:
+ *                  description: File Downloaded Successfully
+ *                  content:
+ *                      text/csv:
+ *                          schema:
+ *                              type: string
+ *                              format: binary
+ *                          example: "id, name, origin, model_year, acceleration, horsepower, mpg, weight, cylinders, displacement\n1, car name, usa, 24, 12.0, 130.0, 18.0 , 3504, 8, 307.0"
+ *                      application/json:
+ *                          schema:
+ *                              type: array
+ *                              items:
+ *                                  $ref: '#/components/schemas/Car'
+ *                          example: [{"id":1,"name":"chevrolet chevelle malibu","mpg":18.0,"cylinders":8,"displacement":307.0,"horsepower":130.0,"weight":3504,"acceleration":12.0,"model_year":70,"origin":"usa"}]
+ *              500:
+ *                  description: Internal Server Error
+ */
+router.get("/download/:type", controller.download);
 
 module.exports = router;

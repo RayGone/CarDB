@@ -96,7 +96,7 @@ export default function EnhancedTable({data, total=0, order='asc', orderBy, page
                                 >
                                     {
                                         columnDef.map((col)=> <TableCell key={col.key} scope={col.key==="id"?"row":""} align="left">
-                                            {col.key==="name" ? row[col.key].toUpperCase() : row[col.key]}
+                                            {col.key==="name" || col.key==="origin" ? row[col.key].toUpperCase() : row[col.key]}
                                         </TableCell>)
                                     }
                                     <TableCell sx={{minWidth: 120}}>

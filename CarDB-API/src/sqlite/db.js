@@ -8,8 +8,11 @@ const getDBInstance = () => {
 const insertCar = (carObj, callback=(e, r)=>{}) => {
     const db = getDBInstance();
     const sql = `INSERT INTO ${process.env.SQLITE_TABLE_NAME} (${Object.keys(carObj).join(", ")}) VALUES (?,?,?,?,?,?,?,?,?)`;
+
+    const values = Object.values(carObj).map((v)=> v=='' ? null : v);
+    
     db.serialize(()=> db.run(sql, 
-        Object.values(carObj), (e) => {
+        values, (e) => {
             if(e==null){                
                 const q = `SELECT last_insert_rowid() as id`;
                 db.get(q, [], callback)
@@ -28,14 +31,18 @@ const getLastRowId = (callback=(e, rowId)) => {
 
 const updateCar = (carObj, callback=(e)=>{}) => {
     const db = getDBInstance();
-    const sql = `UPDATE ${process.env.SQLITE_TABLE_NAME} SET `;
-    Object.keys(carObj).forEach((key) => {
+    let sql = `UPDATE ${process.env.SQLITE_TABLE_NAME} SET `;
+    const keys = Object.keys(carObj);
+    const values = Object.values(carObj).splice(1);
+    values.push(carObj['id']);
+
+    keys.forEach((key) => {
         if(key!='id'){
             sql+= `${key}=?, `;
         }
     })
-    sql+=` id=? WHERE id=${carObje['id']}`;
-    db.serialize(() => db.run(sql, Object.values(carObj), callback));
+    sql+=` id=? WHERE id=${carObj['id']}`;
+    db.serialize(() => db.run(sql, values, callback));
 }
 
 const removeCar = (carId, callback=(e)=>{})=>{
@@ -81,12 +88,20 @@ const initDB = () => {
 }
 
 function queryCar(filterModel, callback=(e,r)=>{}){
+    const db = getDBInstance();
     let sql = `SELECT * FROM ${process.env.SQLITE_TABLE_NAME}`;
+
+    if(filterModel?.all){
+        db.serialize(()=>{
+            db.all(sql, [], callback);
+        })
+        return;
+    }
 
     let conditions = " ";
 
 
-    const search = filterModel?.search;
+    let search = filterModel?.search;
     const isSearch = search && search!="" && search!=null;
     
     const filter = filterModel?.filter;
@@ -122,7 +137,6 @@ function queryCar(filterModel, callback=(e,r)=>{}){
     offset = filterModel?.page ? filterModel?.page * limit : 0;
     sql += ` OFFSET ${offset}`;
 
-    const db = getDBInstance();
     db.serialize(() => {
         db.all(sql, [], (e,cars)=>{
             if(e!=null) console.log("Query Error:", e);
