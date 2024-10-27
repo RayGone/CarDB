@@ -1,7 +1,7 @@
 const { initializeApp, cert } = require('firebase-admin/app');
 const { getFirestore } = require('firebase-admin/firestore');
-const serviceAccount = require("../"+process.env.FIREBASE_SERVICE_ACCOUNT_KEY_PATH);
-const data = require('../'+process.env.DB_INIT_DATA_PATH);
+const serviceAccount = require("../../"+process.env.FIREBASE_SERVICE_ACCOUNT_KEY_PATH);
+const data = require('../../'+process.env.DB_INIT_DATA_PATH);
 
 const collectionName = process.env.FIREBASE_DB_COLLECTION_NAME;
 
