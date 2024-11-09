@@ -8,7 +8,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<CorePage />}></Route>
+        <Route path="/" element={<MUIPage />}></Route>
         <Route path="/custom" element={<CorePage />}></Route>
         <Route path="/material" element={<MUIPage />}></Route>
       </Routes>
