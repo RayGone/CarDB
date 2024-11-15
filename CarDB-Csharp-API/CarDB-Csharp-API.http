@@ -1,0 +1,6 @@
+@CarDB_Csharp_API_HostAddress = http://localhost:5181
+
+GET {{CarDB_Csharp_API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
