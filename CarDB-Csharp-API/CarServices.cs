@@ -1,3 +1,4 @@
+using AutoMapper;
 using CarDB_Csharp_API.Models.Dto;
 using CarDB_Csharp_API.Models.Helper;
 // using System.Collections.Generic;
@@ -16,18 +17,24 @@ public class CarServices: ICarServices{
     private readonly string def_Order = "asc";
     private readonly int def_Limit = 10;
 
-    private CarDBContext _context;
-    public CarServices(CarDBContext context){
+    private readonly CarDBContext _context;
+    private readonly IMapper _mapper;
+    public CarServices(CarDBContext context,
+                    IMapper mapper)
+    {
+        _mapper = mapper;
         _context = context;
     }
 
     public CarResponseDto runQuery(QueryModelDto query){
         var order = query.Order is not null? query.Order : def_OrderBy;
         var orderBy = query.OrderBy is not null ? query.OrderBy : def_Order;
-        var limit = query.Limit < def_Limit ? query.Limit : def_Limit;
+        var limit = query.Limit > def_Limit ? query.Limit : def_Limit;
         var page = query.Page < 0 ? 0 : query.Page;
         var search = query.Search;
         var filter = query.Filter is not null ? query.Filter : [];
+
+        Console.WriteLine($"{limit} {page} {query.Limit}");
 
         var orderExpression = $"{CarAttributeHelper.getAttribute(orderBy)} {order}";
         var q = _context.Cars
@@ -49,10 +56,10 @@ public class CarServices: ICarServices{
         
         var cars = q.Skip(page*limit)
                     .Take(limit)
-                    .ToArray();
+                    .ToList();
 
         return new CarResponseDto{
-            cars = new List<CarReadDto>(),
+            cars = _mapper.Map<List<CarReadDto>>(cars),
             total= total
         };
     }
