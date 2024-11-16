@@ -37,8 +37,7 @@ builder.Services.AddMvc().AddJsonOptions(options => {
     options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault;
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
 });
-
-
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies()); // Reflection for AutoMapper Profiles;
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
