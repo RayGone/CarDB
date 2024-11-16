@@ -9,16 +9,26 @@ namespace CarDB_Csharp_API.Controllers
     public class CarsController: ControllerBase{
 
         private readonly ILogger<CarsController> _logger;
+        private readonly CarServices _service;
 
-        public CarsController(ILogger<CarsController> logger)
+        public CarsController(
+            ILogger<CarsController> logger,
+            CarServices service)
         {
             _logger = logger;
+            _service = service;
         }
 
         [HttpGet(Name = "GetCars")]
-        [HttpPost(Name = "GetFilteredCars")]
-        public ActionResult<CarResponseDto> Get(){
-            return Ok();
+        public ActionResult<CarResponseDto> Get([FromQuery] QueryModelDto query)
+        {
+            return Ok(_service.runQuery(query));
+        }
+
+        [HttpPost("filterSearch",Name = "GetFilteredCars")]
+        public ActionResult<CarResponseDto> FilteredSearch([FromBody] QueryModelDto query)
+        {
+            return Ok(_service.runQuery(query));
         }
     }
 }
