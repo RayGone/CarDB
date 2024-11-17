@@ -23,12 +23,12 @@ namespace CarDB_Csharp_API.Migrations
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Origin = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ModelYear = table.Column<int>(type: "int", nullable: false),
-                    Acceleration = table.Column<int>(type: "int", nullable: true),
-                    HorsePower = table.Column<int>(type: "int", nullable: true),
-                    MPG = table.Column<int>(type: "int", nullable: true),
-                    Cylinders = table.Column<int>(type: "int", nullable: true),
-                    Weight = table.Column<int>(type: "int", nullable: true),
-                    Displacement = table.Column<int>(type: "int", nullable: true)
+                    Acceleration = table.Column<float>(type: "real", nullable: true),
+                    HorsePower = table.Column<float>(type: "real", nullable: true),
+                    MPG = table.Column<float>(type: "real", nullable: true),
+                    Cylinders = table.Column<float>(type: "real", nullable: true),
+                    Weight = table.Column<float>(type: "real", nullable: true),
+                    Displacement = table.Column<float>(type: "real", nullable: true)
                 },
                 constraints: table =>
                 {

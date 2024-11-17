@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CarDB_Csharp_API.Migrations
 {
     [DbContext(typeof(CarDBContext))]
-    [Migration("20241115025039_InitialCreate")]
+    [Migration("20241117033351_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -23,7 +23,7 @@ namespace CarDB_Csharp_API.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("CarDB_Csharp_API.Models.Car", b =>
+            modelBuilder.Entity("CarDB_Csharp_API.Models.Entities.Car", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -31,20 +31,20 @@ namespace CarDB_Csharp_API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("Acceleration")
-                        .HasColumnType("int");
+                    b.Property<float?>("Acceleration")
+                        .HasColumnType("real");
 
-                    b.Property<int?>("Cylinders")
-                        .HasColumnType("int");
+                    b.Property<float?>("Cylinders")
+                        .HasColumnType("real");
 
-                    b.Property<int?>("Displacement")
-                        .HasColumnType("int");
+                    b.Property<float?>("Displacement")
+                        .HasColumnType("real");
 
-                    b.Property<int?>("HorsePower")
-                        .HasColumnType("int");
+                    b.Property<float?>("HorsePower")
+                        .HasColumnType("real");
 
-                    b.Property<int?>("MPG")
-                        .HasColumnType("int");
+                    b.Property<float?>("MPG")
+                        .HasColumnType("real");
 
                     b.Property<int>("ModelYear")
                         .HasColumnType("int");
@@ -57,8 +57,8 @@ namespace CarDB_Csharp_API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("Weight")
-                        .HasColumnType("int");
+                    b.Property<float?>("Weight")
+                        .HasColumnType("real");
 
                     b.HasKey("Id");
 
