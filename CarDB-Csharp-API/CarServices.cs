@@ -12,6 +12,7 @@ using System.Linq.Dynamic.Core;
 public interface ICarServices{
     public CarResponseDto runQuery(QueryModelDto query);
     public CarReadDto deleteCar(int Id);
+    public CarReadDto updateCar(CarReadDto car);
 }
 
 public class CarServices: ICarServices{
@@ -72,5 +73,12 @@ public class CarServices: ICarServices{
         _context.Cars.Remove(car);
         _context.SaveChanges();
         return cardto;
+    }
+
+    public CarReadDto updateCar(CarReadDto car){
+        var carEnt = _mapper.Map<Car>(car);
+        _context.Cars.Update(carEnt);
+        _context.SaveChanges();
+        return car;
     }
 }

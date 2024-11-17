@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using CarDB_Csharp_API.Models;
 using CarDB_Csharp_API.Models.Dto;
+using Microsoft.VisualBasic;
 
 namespace CarDB_Csharp_API.Controllers
 {    
@@ -35,6 +36,15 @@ namespace CarDB_Csharp_API.Controllers
         public ActionResult<CarReadDto> DeleteCar([FromRoute] int id){
             var dto = _service.deleteCar(id);
             return Ok(dto);
+        }
+
+        [HttpPatch("edit/{id}", Name="EditCar")]
+        public ActionResult<CarReadDto> EditCar([FromRoute] int id, [FromBody] CarReadDto inCar){
+            if(id!=inCar.Id){
+                return BadRequest(new {error = "Invalid Car Object Recieved!", id=id, car=inCar});
+            }
+            _service.updateCar(inCar);
+            return inCar;
         }
     }
 }
