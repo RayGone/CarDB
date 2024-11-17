@@ -1,5 +1,6 @@
 using AutoMapper;
 using CarDB_Csharp_API.Models.Dto;
+using CarDB_Csharp_API.Models.Entities;
 using CarDB_Csharp_API.Models.Helper;
 // using System.Collections.Generic;
 // using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using System.Linq.Dynamic.Core;
 
 public interface ICarServices{
     public CarResponseDto runQuery(QueryModelDto query);
+    public CarReadDto deleteCar(int Id);
 }
 
 public class CarServices: ICarServices{
@@ -34,8 +36,6 @@ public class CarServices: ICarServices{
         var search = query.Search;
         var filter = query.Filter is not null ? query.Filter : [];
 
-        Console.WriteLine($"{limit} {page} {query.Limit}");
-
         var orderExpression = $"{CarAttributeHelper.getAttribute(orderBy)} {order}";
         var q = _context.Cars
                     .OrderBy(orderExpression).AsQueryable();
@@ -48,7 +48,6 @@ public class CarServices: ICarServices{
 
         foreach(var f in filter) {            
             var comparisonExpression = $"{CarAttributeHelper.getAttribute(f.Field)} {f.Ops} {f.Value}";
-            // Console.WriteLine(comparisonExpression);
             q = q.Where(comparisonExpression);
         }
 
@@ -64,4 +63,14 @@ public class CarServices: ICarServices{
         };
     }
     
+    public CarReadDto deleteCar(int Id){
+        var car = _context.Cars.Where(row => row.Id == Id).FirstOrDefault();
+        if(car is null){
+            throw new ArgumentNullException(nameof(car));
+        }
+        var cardto = _mapper.Map<CarReadDto>(car);
+        _context.Cars.Remove(car);
+        _context.SaveChanges();
+        return cardto;
+    }
 }

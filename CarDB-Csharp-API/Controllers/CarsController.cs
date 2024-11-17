@@ -30,5 +30,11 @@ namespace CarDB_Csharp_API.Controllers
         {
             return Ok(_service.runQuery(query));
         }
+
+        [HttpDelete("delete/{id}", Name = "DeleteCar")]
+        public ActionResult<CarReadDto> DeleteCar([FromRoute] int id){
+            var dto = _service.deleteCar(id);
+            return Ok(dto);
+        }
     }
 }
