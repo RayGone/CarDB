@@ -1,0 +1,6 @@
+appsettings*
+bin
+obj
+.vs
+WeatherForecast*
+data.json

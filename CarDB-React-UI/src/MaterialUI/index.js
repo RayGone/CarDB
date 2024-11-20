@@ -138,6 +138,7 @@ export default function MUIPage(){
                 onSubmit={(car) => {
                     addCar(car).then((res) => {
                         setOpenAddForm(false);
+                        setFilterModel(getFilterFromStorage());
                     })
                 }}/>
             {(openEditForm && editCarData) &&
