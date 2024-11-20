@@ -81,7 +81,13 @@ export default function FormDialog({open=false, init=null, onSubmit, onClose}){
 
     function handleSubmit(){
         if(formValidation(carState, validationSetter)){
-            onSubmit(carState);
+            var car = [...carState];
+            columnDef
+                .filter((col) => col.type === "number")
+                .forEach((col) => {
+                    return car[col.key] === "" ? null : car[col.key];
+                });
+            onSubmit(car);
         }
     }
 
