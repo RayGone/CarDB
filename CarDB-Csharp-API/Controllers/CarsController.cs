@@ -53,5 +53,29 @@ namespace CarDB_Csharp_API.Controllers
             _service.updateCar(inCar);
             return inCar;
         }
+
+        [HttpGet("download/{dtype}", Name ="Download")]
+        public IActionResult Download([FromRoute] string dtype){
+            switch(dtype){
+                case "csv":
+                    var csv = _service.getCSVString();
+                    var cbytes = System.Text.Encoding.UTF8.GetBytes(csv); 
+                    var cresult = new FileContentResult(cbytes, "text/csv") { 
+                        FileDownloadName = "cars.csv" 
+                    }; 
+                    return cresult;
+                case "json":
+                    var json = _service.getJSONString();
+                    var jbytes = System.Text.Encoding.UTF8.GetBytes(json); 
+                    var jresult = new FileContentResult(jbytes, "application/json") { 
+                        FileDownloadName = "cars.json" 
+                    }; 
+                    return jresult;
+                case "default":
+                    break;
+            }
+
+            return Ok();
+        }
     }
 }

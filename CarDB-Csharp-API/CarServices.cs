@@ -2,18 +2,24 @@ using AutoMapper;
 using CarDB_Csharp_API.Models.Dto;
 using CarDB_Csharp_API.Models.Entities;
 using CarDB_Csharp_API.Models.Helper;
+using System.Globalization; 
+using System.IO;
 // using System.Collections.Generic;
 // using Microsoft.EntityFrameworkCore;
 // using System.Linq;
 using System.Linq.Dynamic.Core;
 // using System.Text.Json;
-// using Newtonsoft.Json;
+using Newtonsoft.Json;
+using CsvHelper;
 
 public interface ICarServices{
+    public List<CarReadDto> getAll();
     public CarResponseDto runQuery(QueryModelDto query);
     public CarReadDto addCar(CarUpdateDto car);
     public CarReadDto deleteCar(int Id);
     public CarReadDto updateCar(CarReadDto car);
+    public string getCSVString();
+    public string getJSONString();
 }
 
 public class CarServices: ICarServices{
@@ -28,6 +34,27 @@ public class CarServices: ICarServices{
     {
         _mapper = mapper;
         _context = context;
+    }
+
+    public List<CarReadDto> getAll(){
+        var car = _context.Cars.ToList();
+        return _mapper.Map<List<CarReadDto>>(car);
+    }
+
+    public string getCSVString(){
+        var data = getAll();
+        using (var stringWriter = new StringWriter()) 
+        using (var csv = new CsvWriter(stringWriter, CultureInfo.InvariantCulture)) 
+        { 
+            csv.WriteRecords(data); 
+            return stringWriter.ToString();
+        }
+    }
+
+    public string getJSONString(){
+        var data = getAll();
+        var json = JsonConvert.SerializeObject(data);
+        return json;
     }
 
     public CarResponseDto runQuery(QueryModelDto query){
