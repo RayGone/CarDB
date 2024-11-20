@@ -11,6 +11,7 @@ using System.Linq.Dynamic.Core;
 
 public interface ICarServices{
     public CarResponseDto runQuery(QueryModelDto query);
+    public CarReadDto addCar(CarUpdateDto car);
     public CarReadDto deleteCar(int Id);
     public CarReadDto updateCar(CarReadDto car);
 }
@@ -64,6 +65,17 @@ public class CarServices: ICarServices{
         };
     }
     
+    public CarReadDto addCar(CarUpdateDto car){
+        var model = _mapper.Map<Car>(car);
+        _context.Cars.Add(model);
+        _context.SaveChanges();
+
+        var dto = _mapper.Map<CarReadDto>(
+                    _context.Cars.Find(model.Id)
+                );
+        return dto;
+    }
+
     public CarReadDto deleteCar(int Id){
         var car = _context.Cars.Where(row => row.Id == Id).FirstOrDefault();
         if(car is null){

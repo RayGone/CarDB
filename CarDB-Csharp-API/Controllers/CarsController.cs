@@ -32,6 +32,13 @@ namespace CarDB_Csharp_API.Controllers
             return Ok(_service.runQuery(query));
         }
 
+        [HttpPost("add", Name="AddCar")]
+        public ActionResult<CarReadDto>AddCar([FromBody] CarUpdateDto car)
+        {
+            var dto = _service.addCar(car);
+            return dto;
+        }
+
         [HttpDelete("delete/{id}", Name = "DeleteCar")]
         public ActionResult<CarReadDto> DeleteCar([FromRoute] int id){
             var dto = _service.deleteCar(id);
@@ -41,7 +48,7 @@ namespace CarDB_Csharp_API.Controllers
         [HttpPatch("edit/{id}", Name="EditCar")]
         public ActionResult<CarReadDto> EditCar([FromRoute] int id, [FromBody] CarReadDto inCar){
             if(id!=inCar.Id){
-                return BadRequest(new {error = "Invalid Car Object Recieved!", id=id, car=inCar});
+                return BadRequest(new {error = "Invalid Car Object Recieved!", car=inCar});
             }
             _service.updateCar(inCar);
             return inCar;
