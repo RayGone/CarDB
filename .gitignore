@@ -1,5 +1,2 @@
-*/node_modules/
-*.csv
-CarDB-API/src/*.json
 .env
 *.db3
