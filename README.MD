@@ -7,7 +7,6 @@ Welcome to CarDB, a simple web application project featuring modern UI framework
 - [Introduction](#introduction)
 - [Features](#features)
 - [Setup](#setup)
-- [Usage](#usage)
 
 ## Introduction
 
@@ -15,10 +14,10 @@ CarDB is a web application designed to demonstrate the integration of popular fr
 
 ## Features
 
-- **React UI:** A dynamic user interface built with React with Material Design.
-- **Angular UI:** Another robust user interface built with Angular with Material Design.
-- **ExpressJS API:** A backend API.
-- **C#.NET API:** A backend API.
+- **[React](./UI/CarDB-React) UI:** A dynamic user interface built with React with Material Design.
+- **[Angular](./UI/CarDB-Angular) UI:** Another robust user interface built with Angular with Material Design.
+- **[ExpressJS](./API/CarDB-Express) API:** A backend API using ExpressJS.
+- **[C#.NET](./API/CarDB-CSharp) API:** A backend API using C#.NET.
 
 ## Setup
 
@@ -35,11 +34,11 @@ To run this project locally, follow these steps:
 1. **Clone the repository:**
    ```sh
    git clone https://github.com/rayGone/cardb.git
-2. **Choose one Backend** [ExpressJS](./CarDB-API) or [C#.NET](./CarDB-Csharp-API)
+2. **Choose one Backend** [ExpressJS](./API/CarDB-Express) or [C#.NET](./API/CarDB-CSharp)
     ```sh
     dotnet run #if C#
     #----
     npm start #if Express
-3. **Choose UI** [Angular](./CarDB-UI) or [React](./CarDB-React-UI)
+3. **Choose UI** [Angular](./UI/CarDB-Angular) or [React](./UI/CarDB-React)
     ```sh
     npm start
