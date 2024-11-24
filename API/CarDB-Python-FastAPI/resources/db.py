@@ -1,7 +1,7 @@
 import os
 import sqlite3
 import json
-from .models import Car, DataFilterModel, CarAttributesEnum
+from .models import Car, DataFilterModel, CarAttributesEnum, CarResponse
 
 DO_INIT = not not os.getenv("INIT_DB") == 'true'
 FORCE_RESET_ON_INIT = os.getenv("FORCE_RESET_DB_ON_INIT") == 'true'
@@ -10,7 +10,9 @@ TABLE_NAME = os.getenv("SQLITE_TABLE_NAME")
 INIT_DATA_PATH = os.getenv("DB_INIT_DATA_PATH")
 
 def getConnection():
-    return sqlite3.connect(DB_NAME)
+    conn =  sqlite3.connect(DB_NAME)
+    conn.row_factory = sqlite3.Row
+    return conn
 
 def initDB():
     print("######### Initializing Database #############\n")
@@ -84,12 +86,12 @@ def runQuery(model: DataFilterModel) -> Car:
     query = f"{select} {conditions} ORDER BY {model.orderBy.value} {model.order.value} LIMIT {model.limit} OFFSET {model.limit*model.page}"
     print(query)
     cursor.execute(query)
-    cars: list[Car] = cursor.fetchall()
+    cars: list[Car] = [Car(**dict(row)) for row in cursor.fetchall()]
     
-    query = f"select count(*) as count from ({select} {conditions})"
+    query = f"select count(*) as total from ({select} {conditions})"
     cursor.execute(query)
-    total = cursor.fetchall()
-    print(total)
+    total = cursor.fetchone()['total']
     
     conn.close()    
-    return cars
+    response: CarResponse = CarResponse(cars=cars, total=total)
+    return response
