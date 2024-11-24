@@ -1,6 +1,7 @@
 import os
 import sqlite3
 import json
+from .models import Car, DataFilterModel, CarAttributesEnum
 
 DO_INIT = not not os.getenv("INIT_DB") == 'true'
 FORCE_RESET_ON_INIT = os.getenv("FORCE_RESET_DB_ON_INIT") == 'true'
@@ -8,9 +9,12 @@ DB_NAME = os.getenv("SQLITE_DB_NAME")
 TABLE_NAME = os.getenv("SQLITE_TABLE_NAME")
 INIT_DATA_PATH = os.getenv("DB_INIT_DATA_PATH")
 
+def getConnection():
+    return sqlite3.connect(DB_NAME)
+
 def initDB():
     print("######### Initializing Database #############\n")
-    conn = sqlite3.connect(DB_NAME)
+    conn = getConnection()
     cursor = conn.cursor()
     if(FORCE_RESET_ON_INIT):
         print(f"0. FORCE RESET is set to true. Dropping Table {TABLE_NAME}")
@@ -54,3 +58,38 @@ def initDB():
     conn.commit()
     conn.close()
     print()
+    
+def runQuery(model: DataFilterModel) -> Car:
+    conn = getConnection()
+    cursor = conn.cursor()
+    
+    select = f"SELECT * FROM {TABLE_NAME}"
+    
+    conditions = ""
+    isSearch = len(model.search) > 0
+    isFilter = len(model.filter) > 0
+    if( isSearch or isFilter):
+        conditions = "WHERE "
+        if(isSearch):
+            conditions+= f"(LOWER({CarAttributesEnum.NAME.value}) like '%{model.search.lower()}%' OR "
+            conditions+= f"LOWER({CarAttributesEnum.ORIGIN.value}) like '%{model.search.lower()}%') AND "
+        
+        if(isFilter):
+            conditions+="("
+            for f in model.filter:
+                conditions+= f"{f.field}{f.ops}{f.value} AND "
+                
+            conditions+="true)"        
+    
+    query = f"{select} {conditions} ORDER BY {model.orderBy.value} {model.order.value} LIMIT {model.limit} OFFSET {model.limit*model.page}"
+    print(query)
+    cursor.execute(query)
+    cars: list[Car] = cursor.fetchall()
+    
+    query = f"select count(*) as count from ({select} {conditions})"
+    cursor.execute(query)
+    total = cursor.fetchall()
+    print(total)
+    
+    conn.close()    
+    return cars
