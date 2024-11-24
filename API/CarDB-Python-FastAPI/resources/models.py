@@ -1,20 +1,20 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from enum import Enum
-from typing import Optional
+from typing import Optional, Literal
 
 class Car(BaseModel):
-    id: int
-    name: str
-    origin: str
-    model_year: int
-    acceleration: Optional[float]
-    horsepower: Optional[float]
-    mpg: Optional[float]
-    weight: Optional[float]
-    cylinders: Optional[float]
-    displacement: Optional[float]
+    id: Optional[int] = Field(ge=0)
+    name: str = Field(title="Car Name", max_length=100)
+    origin: str = Field(title="Car Origin", max_length=20)
+    model_year: int = Field(title="Car Model Year", gt=0)
+    acceleration: Optional[float] = Field(ge=0.0)
+    horsepower: Optional[float] = Field(ge=0.0)
+    mpg: Optional[float] = Field(ge=0.0)
+    weight: Optional[float] = Field(ge=0.0)
+    cylinders: Optional[float] = Field(ge=0.0)
+    displacement: Optional[float] = Field(ge=0.0)
     
-class CarAttributes(Enum):
+class CarAttributesEnum(Enum):
     ID = "id"
     NAME = "name"
     ORIGIN = "origin"
@@ -30,7 +30,7 @@ class CarResponse(BaseModel):
     cars: list[Car]
     total: int
     
-class FilterOps(Enum):
+class FilterOpsEnum(Enum):
     EQUAL = "=="
     NOT_EQUAL = "!="
     GREATER_THAN = ">"
@@ -38,22 +38,22 @@ class FilterOps(Enum):
     GREATER_OR_EQUAL = ">="
     LESS_OR_EQUAL = "<="
     
-class Order(Enum):
+class OrderEnum(Enum):
     ASC = "asc"
     DESC = "desc"
 
 class FilterCondition(BaseModel):
-    field: CarAttributes
-    ops: FilterOps
-    value: str
+    field: CarAttributesEnum
+    ops: FilterOpsEnum
+    value: float
 
 class DataFilterModel(BaseModel):
-    filter: list[FilterCondition] = []
-    limit: int = 5
-    order: Order = 'asc'
-    orderBy: CarAttributes = 'id'
-    search: str = ''
-    page: int = 0
+    filter: list[FilterCondition] = Field([], description="List of filters")
+    limit: int = Field(5, ge=0, description="Max number of entries in a page")
+    order: OrderEnum = Field(OrderEnum.ASC.value)
+    orderBy: CarAttributesEnum = Field(CarAttributesEnum.ID.value)
+    search: str = Field('', max_length=50)
+    page: int = Field(0, ge=0)
 
 
 if __name__ == "__main__":
