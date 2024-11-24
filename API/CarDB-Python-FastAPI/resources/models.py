@@ -3,16 +3,16 @@ from enum import Enum
 from typing import Optional, Literal
 
 class Car(BaseModel):
-    id: Optional[int] = Field(ge=0)
+    id: Optional[int] = Field(None, ge=0)
     name: str = Field(title="Car Name", max_length=100)
     origin: str = Field(title="Car Origin", max_length=20)
     model_year: int = Field(title="Car Model Year", gt=0)
-    acceleration: Optional[float] = Field(ge=0.0)
-    horsepower: Optional[float] = Field(ge=0.0)
-    mpg: Optional[float] = Field(ge=0.0)
-    weight: Optional[float] = Field(ge=0.0)
-    cylinders: Optional[float] = Field(ge=0.0)
-    displacement: Optional[float] = Field(ge=0.0)
+    acceleration: Optional[float] = Field(None,ge=0.0)
+    horsepower: Optional[float] = Field(None, ge=0.0)
+    mpg: Optional[float] = Field(None, ge=0.0)
+    weight: Optional[float] = Field(None, ge=0.0)
+    cylinders: Optional[float] = Field(None, ge=0.0)
+    displacement: Optional[float] = Field(None, ge=0.0)
     
 class CarAttributesEnum(Enum):
     ID = "id"
@@ -27,8 +27,8 @@ class CarAttributesEnum(Enum):
     DISPLACEMENT = 'displacement'
 
 class CarResponse(BaseModel):
-    cars: list[Car]
-    total: int
+    cars: list[Car] = Field([], description="List of Cars")
+    total: int = Field(0, ge=0)
     
 class FilterOpsEnum(Enum):
     EQUAL = "=="
@@ -50,8 +50,8 @@ class FilterCondition(BaseModel):
 class DataFilterModel(BaseModel):
     filter: list[FilterCondition] = Field([], description="List of filters")
     limit: int = Field(5, ge=0, description="Max number of entries in a page")
-    order: OrderEnum = Field(OrderEnum.ASC.value)
-    orderBy: CarAttributesEnum = Field(CarAttributesEnum.ID.value)
+    order: OrderEnum = Field(OrderEnum.ASC)
+    orderBy: CarAttributesEnum = Field(CarAttributesEnum.ID)
     search: str = Field('', max_length=50)
     page: int = Field(0, ge=0)
 

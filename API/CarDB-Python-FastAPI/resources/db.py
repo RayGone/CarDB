@@ -61,7 +61,7 @@ def initDB():
     conn.close()
     print()
     
-def runQuery(model: DataFilterModel) -> Car:
+def RunQuery(model: DataFilterModel) -> CarResponse:
     conn = getConnection()
     cursor = conn.cursor()
     
@@ -79,12 +79,14 @@ def runQuery(model: DataFilterModel) -> Car:
         if(isFilter):
             conditions+="("
             for f in model.filter:
-                conditions+= f"{f.field}{f.ops}{f.value} AND "
+                conditions+= f"{f.field.value}{f.ops.value}{f.value} AND "
                 
-            conditions+="true)"        
+            conditions+="true)"  
+        else:
+            conditions+="true"      
     
     query = f"{select} {conditions} ORDER BY {model.orderBy.value} {model.order.value} LIMIT {model.limit} OFFSET {model.limit*model.page}"
-    print(query)
+    # print(query)
     cursor.execute(query)
     cars: list[Car] = [Car(**dict(row)) for row in cursor.fetchall()]
     
@@ -95,3 +97,67 @@ def runQuery(model: DataFilterModel) -> Car:
     conn.close()    
     response: CarResponse = CarResponse(cars=cars, total=total)
     return response
+
+def GetById(id: int) -> Car:
+    conn = getConnection()
+    cursor = conn.cursor()
+    cursor.execute(f"SELECT * FROM {TABLE_NAME} WHERE id=:id", {"id": id})
+    response = cursor.fetchone()
+    conn.close()
+    if(response):
+        return Car(**dict(response))
+    else:
+        return None
+    
+def GetAll() -> list[Car]:
+    conn = getConnection()
+    cursor = conn.cursor()
+    cursor.execute(f"SELECT * FROM {TABLE_NAME}")
+    response = cursor.fetchall()
+    conn.close()
+    if(response):
+        return [dict(row) for row in response]
+    else:
+        return []
+    
+
+def InsertCar(car: Car) -> int:
+    data = car.model_dump()
+    del data['id']
+    
+    keys = ','.join(data.keys())
+    bindings = ','.join([":"+k for k in data.keys()])
+    sql = f"INSERT INTO {TABLE_NAME}({keys}) VALUES ({bindings})"
+    
+    conn = getConnection()
+    cursor = conn.cursor()
+    cursor.execute(sql, data)
+    id = cursor.lastrowid
+    conn.commit()
+    conn.close()
+    return id
+    
+def UpdateCar(car: Car) -> None:
+    data = car.model_dump()
+    
+    bindings = ','.join([f"{k}=:{k}" for k in data.keys()])
+    sql = f"UPDATE {TABLE_NAME} SET {bindings} WHERE id=:id"
+    # print(sql)
+    
+    conn = getConnection()
+    cursor = conn.cursor()
+    cursor.execute(sql, data)
+    conn.commit()
+    conn.close()
+    
+def RemoveCar(id: int) -> None:
+    sql = f"DELETE FROM {TABLE_NAME} WHERE id=:id"
+    conn = getConnection()
+    cursor = conn.cursor()
+    cursor.execute(sql, {"id":id})
+    conn.commit()
+    conn.close()
+
+if __name__ == "__main__": 
+    UpdateCar(Car(id=0, name="TestCar", origin="NPL", model_year=2024, acceleration=18,
+                  horsepower=200, mpg=20, weight=500, cylinders=6, displacement=20))
