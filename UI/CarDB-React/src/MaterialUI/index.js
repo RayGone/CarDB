@@ -148,6 +148,7 @@ export default function MUIPage(){
                     open={openEditForm} 
                     onClose={()=>setOpenEditForm(false)} 
                     onSubmit={(car) => {
+                            car.id = editCarData.id
                             editCar(car).then((res)=>{
                                 setOpenEditForm(false);
                                 setEditCarData(null);
