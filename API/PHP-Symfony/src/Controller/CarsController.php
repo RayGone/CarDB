@@ -72,7 +72,6 @@ class CarsController extends AbstractController
         } 
     }
 
-    
     #[Route('/edit/{id}', name: "Add Car", methods:['PATCH'], stateless:true)]
     public function editCar(Request $request, Connection $db, int $id): Response{
         $patch = json_decode($request->getContent(), true);
@@ -104,7 +103,7 @@ class CarsController extends AbstractController
                 return $this->json($bindParams);
             else
                 throw new RuntimeException("Unable to Edit Car! Query Excecution Unsuccessful!");
-            
+
             return $this->json($car->toArray());
         }
         catch(RuntimeException $e){
@@ -115,6 +114,22 @@ class CarsController extends AbstractController
         }
     }
 
+    
+    #[Route('/delete/{id}', name: "Delete Car", methods:['DELETE'], stateless:true)]
+    public function deleteCAr(Request $request, int $id, Connection $db): Response{
+        $sql = "DELETE FROM cars WHERE id=:id";
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(":id", $id);
+        $exec = $stmt->executeQuery();
+        if($exec){
+            return $this->json(["id"=>$id]);
+        }
+
+        return $this->json([
+            "message" => "Unable to Delete Car! Query Excecution Unsuccessful",
+            "input" => $id,
+        ], status: 500);   
+    }
     //=====================
     //------Services-----------
     //=============================
