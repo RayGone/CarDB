@@ -15,7 +15,7 @@ class QueryFilterDto
     private string $orderBy;
     private string $search;
     private int $page;
-    
+
     public function __construct(array $param)
     {
         $this->fromArray($param);
@@ -88,7 +88,7 @@ class QueryFilterDto
     }
 
     public function isConditions(): bool{
-        return !is_null($this->search) || !!count($this->filter);
+        return !!strlen($this->search) || !!count($this->filter);
     }
 
     public function fromArray(array $data): self
