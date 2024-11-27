@@ -7,8 +7,9 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpFoundation\StreamedJsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
-// use Symfony\Component\HttpFoundation\JsonResponse;
 use Doctrine\DBAL\Connection;
 // use Exception;
 // use DateTime;
@@ -16,25 +17,25 @@ use Doctrine\DBAL\Connection;
 use App\Dto;
 use RuntimeException;
 
-#[Route('/cars', name: 'Cars API')]
+#[Route('/cars', name: 'Cars API - ')]
 class CarsController extends AbstractController
 {
-    #[Route('/', name: 'Get Cars', methods:["GET"], stateless:true)]
+    #[Route('', name: 'Get Cars')]
     public function get(Request $request, Connection $db, SerializerInterface $serializer): Response{
         $param = new Dto\QueryFilterDto($request->query->all());
         // $json = $serializer->serialize($param,'json');
         // return JsonResponse::fromJsonString($json);
 
         $result = $this->runFetchQuery($db, $param);
-        return JsonResponse::fromJsonString($serializer->serialize($result,'json'));
+        return new JsonResponse($result);
     }
 
-    #[Route('/filterSearch', name: 'Get Cars', methods:["POST"], stateless:true)]
+    #[Route('/filterSearch', name: 'Get Cars By Post', methods:["POST"], stateless:true)]
     public function filteredSearch(Request $request, Connection $db, SerializerInterface $serializer): Response{
         $param = new Dto\QueryFilterDto(json_decode($request->getContent(), true));
 
         $result = $this->runFetchQuery($db, $param);
-        return JsonResponse::fromJsonString($serializer->serialize($result,'json'));
+        return new JsonResponse($result);
     }
 
     #[Route('/add', name: "Add Car", methods:['POST'], stateless:true)]
@@ -114,9 +115,8 @@ class CarsController extends AbstractController
         }
     }
 
-    
     #[Route('/delete/{id}', name: "Delete Car", methods:['DELETE'], stateless:true)]
-    public function deleteCAr(Request $request, int $id, Connection $db): Response{
+    public function deleteCAr(int $id, Connection $db): Response{
         $sql = "DELETE FROM cars WHERE id=:id";
         $stmt = $db->prepare($sql);
         $stmt->bindValue(":id", $id);
@@ -130,6 +130,39 @@ class CarsController extends AbstractController
             "input" => $id,
         ], status: 500);   
     }
+    
+    #[Route('/download/{type}', name: "Downlaod All Data", methods:['GET'], stateless:true)]
+    public function download(string $type, Connection $db, SerializerInterface $serializer): Response{
+        $sql = "SELECT * FROM cars";
+        $stmt = $db->prepare($sql);
+        $exec = $stmt->executeQuery();
+        if($exec){
+            $result = $exec->fetchAllAssociative();
+            if($type=="csv"){        
+                $response = new StreamedResponse(function() use($serializer, $result){
+                    $csv = $serializer->serialize($result,'csv');
+                    $handle = fopen('php://output', 'w+');
+                    fwrite($handle, $csv);
+                    fclose($handle);
+                });        
+                $response->headers->set('Content-Type', 'text/csv; charset=utf-8'); 
+                $response->headers->set('Content-Disposition', 'attachment; filename="cars.csv"');
+                return $response;
+            }else{
+                $response = new StreamedJsonResponse($result);
+                $response->headers->set('Content-Type', 'application/json; charset=utf-8'); 
+                $response->headers->set('Content-Disposition', 'attachment; filename="cars.json"');
+                return $response;
+            }
+
+        }
+
+        return $this->json([
+            "message" => "Unable to Download!!",
+            "input" => $type,
+        ], status: 500);   
+    }
+
     //=====================
     //------Services-----------
     //=============================
