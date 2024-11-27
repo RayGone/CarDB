@@ -13,36 +13,113 @@ use Doctrine\DBAL\Connection;
 // use Exception;
 // use DateTime;
 
-use App\Dto\QueryFilterDto;
-use App\Dto\FilterDto;
-
+use App\Dto;
+use RuntimeException;
 
 #[Route('/cars', name: 'Cars API')]
 class CarsController extends AbstractController
 {
     #[Route('/', name: 'Get Cars', methods:["GET"], stateless:true)]
     public function get(Request $request, Connection $db, SerializerInterface $serializer): Response{
-        $param = new QueryFilterDto($request->query->all());
+        $param = new Dto\QueryFilterDto($request->query->all());
         // $json = $serializer->serialize($param,'json');
         // return JsonResponse::fromJsonString($json);
 
-        $result = $this->runQuery($db, $param);
+        $result = $this->runFetchQuery($db, $param);
         return JsonResponse::fromJsonString($serializer->serialize($result,'json'));
     }
 
     #[Route('/filterSearch', name: 'Get Cars', methods:["POST"], stateless:true)]
     public function filteredSearch(Request $request, Connection $db, SerializerInterface $serializer): Response{
-        $param = new QueryFilterDto(json_decode($request->getContent(), true));
+        $param = new Dto\QueryFilterDto(json_decode($request->getContent(), true));
 
-        $result = $this->runQuery($db, $param);
+        $result = $this->runFetchQuery($db, $param);
         return JsonResponse::fromJsonString($serializer->serialize($result,'json'));
+    }
+
+    #[Route('/add', name: "Add Car", methods:['POST'], stateless:true)]
+    public function addCar(Request $request, Connection $db): Response{
+        $post = json_decode($request->getContent(), true);
+        try{
+            $car = new Dto\CarsDto($post);
+            $attributes = $car->carAttributes($exclude=["id"]);
+
+            $keys = implode(",", $attributes);
+            $bindings = implode(",",
+                            array_map(function($k){
+                                return ":$k";
+                            }, $attributes)
+                        );
+            $sql = "INSERT INTO cars ({$keys}) VALUES ({$bindings})";
+            $stmt = $db->prepare($sql);
+            $bindParams = $car->toArray();
+
+            foreach($attributes as $attr){
+                $stmt->bindValue(":$attr", $bindParams[$attr]);
+            }
+            $exec = $stmt->executeQuery();
+
+            if($exec)
+                return $this->json($bindParams);
+            else
+                throw new RuntimeException("Unable to Add Car! Query Excecution Unsuccessful!");
+        }
+        catch(RuntimeException $e){
+            return $this->json([
+                "message" => $e->getMessage(),
+                "input" => $post
+            ], status: 500);
+        } 
+    }
+
+    
+    #[Route('/edit/{id}', name: "Add Car", methods:['PATCH'], stateless:true)]
+    public function editCar(Request $request, Connection $db, int $id): Response{
+        $patch = json_decode($request->getContent(), true);
+  
+        try{      
+            if(!isset($patch['id']) || $patch['id']!=$id){
+                throw new RuntimeException("Car can't be found");
+            }
+            $car = new Dto\CarsDto($patch);
+
+            $attributes = $car->carAttributes($exclude=["id"]);
+            $bindings = implode(",",
+                            array_map(function($k){
+                                return "$k=:$k";
+                            }, $attributes)
+                        );
+
+            $sql = "UPDATE cars SET {$bindings} WHERE id=:id";
+            $stmt = $db->prepare($sql);
+            
+            $bindParams = $car->toArray();
+            foreach($attributes as $attr){
+                $stmt->bindValue(":$attr", $bindParams[$attr]);
+            }
+            $stmt->bindValue(":id", $id);
+
+            $exec = $stmt->executeQuery();
+            if($exec)
+                return $this->json($bindParams);
+            else
+                throw new RuntimeException("Unable to Edit Car! Query Excecution Unsuccessful!");
+            
+            return $this->json($car->toArray());
+        }
+        catch(RuntimeException $e){
+            return $this->json([
+                "message" => $e->getMessage(),
+                "input" => $patch,
+            ], status: 500);
+        }
     }
 
     //=====================
     //------Services-----------
     //=============================
     
-    public function fetchQueryBuilder(QueryFilterDto $param): array
+    public function fetchQueryBuilder(Dto\QueryFilterDto $param): array
     {
         $offset = $param->getLimit() * $param->getPage();
         $conditions = "";
@@ -59,7 +136,7 @@ class CarsController extends AbstractController
                 $conditions.= strlen($conditions)>6 ? "AND " : "";
                 $fc = count($filter);
                 foreach($filter as $f){
-                    if($f instanceof FilterDto){
+                    if($f instanceof Dto\FilterDto){
                         $conditions.= "{$f->getField()}{$f->getOps()}{$f->getValue()}";
                     }
                     $fc = $fc-1;
@@ -74,7 +151,7 @@ class CarsController extends AbstractController
         return [$sql, $count];
     }
 
-    public function runQuery(Connection $db, QueryFilterDto $param): array
+    public function runFetchQuery(Connection $db, Dto\QueryFilterDto $param): array
     {
         [$fsql, $csql] = $this->fetchQueryBuilder($param);
         // return [$fsql, $csql];
