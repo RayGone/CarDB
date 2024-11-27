@@ -1,6 +1,6 @@
 # CarDB
 
-Welcome to CarDB, a simple web application project featuring modern UI frameworks and a work-in-progress API backend.
+Welcome to CarDB, a simple web application project featuring modern UI frameworks and multiple API backends.
 
 ## Table of Contents
 
