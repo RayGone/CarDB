@@ -194,8 +194,8 @@ class CarsController extends AbstractController
         }
 
         $sql = "SELECT id,name,origin,model_year,acceleration,horsepower,mpg,weight,cylinders,displacement
-                FROM public.cars {$conditions} ORDER BY {$param->getOrderBy()} {$param->getOrder()} LIMIT {$param->getLimit()} OFFSET {$offset}";
-        $count = "SELECT count(*) as total FROM public.cars $conditions";
+                FROM cars {$conditions} ORDER BY {$param->getOrderBy()} {$param->getOrder()} LIMIT {$param->getLimit()} OFFSET {$offset}";
+        $count = "SELECT count(*) as total FROM cars $conditions";
         return [$sql, $count];
     }
 
