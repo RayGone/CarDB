@@ -73,7 +73,7 @@ class CarsController extends AbstractController
         } 
     }
 
-    #[Route('/edit/{id}', name: "Add Car", methods:['PATCH'], stateless:true)]
+    #[Route('/edit/{id}', name: "Edit Car", methods:['PATCH'], stateless:true)]
     public function editCar(Request $request, Connection $db, int $id): Response{
         $patch = json_decode($request->getContent(), true);
   
@@ -175,8 +175,8 @@ class CarsController extends AbstractController
             $conditions = "WHERE ";
             $search = $param->getSearch();
             if(!!strlen($search)){
-                $conditions.= "(LOWER(name) ILIKE '%$search%' OR ";
-                $conditions.= "LOWER(origin) ILIKE '%$search%') ";
+                $conditions.= "(LOWER(name) LIKE '%$search%' OR "; // somehow mysql didn't handle ILIKE
+                $conditions.= "LOWER(origin) LIKE '%$search%') "; 
             }
 
             $filter = $param->getFilter();
