@@ -144,7 +144,7 @@ class CarsDto
         if (isset($data['origin']) && trim($data['origin'])!="") {
             $this->setOrigin($data['origin']);
         } else throw new RuntimeException("Required Field Missing / Empty. origin is missing.");
-        if (isset($data['model_year']) && is_integer($data['model_year']) && $data['model_year']>=0) {
+        if (isset($data['model_year']) && is_numeric($data['model_year']) && $data['model_year']>=0) {
             $this->setModel_year($data['model_year']);
         } else throw new RuntimeException("Required Field Missing / Invalid. model_year is missing / invalid.");
         if (isset($data['acceleration'])) {
