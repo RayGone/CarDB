@@ -19,6 +19,7 @@ CarDB is a web application designed to demonstrate the integration of popular fr
 - **[ExpressJS](./API/CarDB-Express) API:** A backend API using ExpressJS.
 - **[C#.NET](./API/CarDB-CSharp) API:** A backend API using C#.NET.
 - **[FastAPI](./API/CarDB-Python-FastAPI):** A python API using FastAPI.
+- **[Symfony](./API/PHP-Symfony):** A python API using FastAPI.
 
 ## Setup
 
@@ -36,13 +37,16 @@ To run this project locally, follow these steps:
 1. **Clone the repository:**
    ```sh
    git clone https://github.com/rayGone/cardb.git
-2. **Choose one Backend** [ExpressJS](./API/CarDB-Express) or [C#.NET](./API/CarDB-CSharp) or [FastAPI](./API/CarDB-Python-FastAPI)
+2. **Choose one Backend** [ExpressJS](./API/CarDB-Express) or [C#.NET](./API/CarDB-CSharp) or [FastAPI](./API/CarDB-Python-FastAPI) or [Symfony](./API/PHP-Symfony)
     ```sh
     dotnet run #if C#
     #----
     npm start #if Express
     #----
     fastapi run index.py
+    #-----
+    # run the php server inside public directory
+    php -S localhost:8000
 
 3. **Choose UI** [Angular](./UI/CarDB-Angular) or [React](./UI/CarDB-React)
     ```sh
