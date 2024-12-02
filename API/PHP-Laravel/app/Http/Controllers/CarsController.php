@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Cars;
 use App\Dto\QueryFilterDto;
 use App\Dto\CarsDto;
+use RuntimeException;
 
 class CarsController extends Controller
 {
@@ -53,16 +54,16 @@ class CarsController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'id' => 'numeric',
+            'id' => 'nullable|numeric',
             'name' => 'required|string|max:255',
             'origin' => 'required|string|max:255',
             'model_year' => 'required|numeric',
-            'acceleration' => 'numeric',
-            'horsepower' => 'numeric',
-            'mpg' => 'numeric',
-            'weight' => 'numeric',
-            'cylinders' => 'numeric',
-            'displacement' => 'numeric',
+            'acceleration' => 'nullable|numeric',
+            'horsepower' => 'nullable|numeric',
+            'mpg' => 'nullable|numeric',
+            'weight' => 'nullable|numeric',
+            'cylinders' => 'nullable|numeric',
+            'displacement' => 'nullable|numeric',
         ]);
 
         $carDto = (new CarsDto($validated))->toArray();
@@ -87,7 +88,33 @@ class CarsController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $validated = $request->validate([
+            'id' => 'required|numeric',
+            'name' => 'required|string|max:255',
+            'origin' => 'required|string|max:255',
+            'model_year' => 'required|numeric',
+            'acceleration' => 'nullable|numeric',
+            'horsepower' => 'nullable|numeric',
+            'mpg' => 'nullable|numeric',
+            'weight' => 'nullable|numeric',
+            'cylinders' => 'nullable|numeric',
+            'displacement' => 'nullable|numeric',
+        ]);
+
+
+        $carDto = (new CarsDto($validated))->toArray();
+        $car = Cars::where("id",$id)->first();
+
+        if($id != $carDto['id'] || !$car){
+            throw new RuntimeException("Car doesn't Exist.");
+        }
+
+        unset($carDto['id']);
+
+        $car->fill($carDto);
+        $car->save();
+
+        return response()->json($car);
     }
 
     /**

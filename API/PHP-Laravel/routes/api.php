@@ -67,8 +67,9 @@ Route::group(['prefix'=>"user"], function(){
 });
 
 Route::group(['prefix'=>"cars", "middleware"=>['auth:sanctum']], function(){
-    Route::get("/", [CarsController::class, "index"]);
-    Route::post("/filterSearch", [CarsController::class, "index"]);
-    Route::get("/{id}", [CarsController::class, "show"]);
-    Route::post("/add", [CarsController::class, "store"]);
-});
+    Route::get("/", [CarsController::class, "index"])->name("Get Cars");
+    Route::post("/filterSearch", [CarsController::class, "index"])->name("Get Cars with Filters");
+    Route::get("/{id}", [CarsController::class, "show"])->name("Get Cary By Id");
+    Route::post("/add", [CarsController::class, "store"])->name("Add a new Car");
+    Route::patch("/edit/{id}", [CarsController::class, "update"])->name("Edit Car");
+})->namespace("Cars");
