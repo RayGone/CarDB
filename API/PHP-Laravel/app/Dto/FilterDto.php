@@ -58,7 +58,7 @@ class FilterDto
         if (isset($data['value'])) {
             $this->setValue($data['value']);
         }
-        
+
         return $this;
     }
 }
