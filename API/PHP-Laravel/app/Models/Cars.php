@@ -28,17 +28,7 @@ class Cars extends Model
         return ucwords($name);
     }
 
-    public function setNameAttribute($name)
-    {
-        $this->attributes['name'] = mb_strtolower($name);
-    }
-
     public function getOriginAttribute($origin){
         return strtoupper($origin);
-    }
-
-    public function setOriginAttribute($origin)
-    {
-        $this->attributes['name'] = mb_strtolower($origin);
     }
 }

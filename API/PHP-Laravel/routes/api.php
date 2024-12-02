@@ -69,4 +69,6 @@ Route::group(['prefix'=>"user"], function(){
 Route::group(['prefix'=>"cars", "middleware"=>['auth:sanctum']], function(){
     Route::get("/", [CarsController::class, "index"]);
     Route::post("/filterSearch", [CarsController::class, "index"]);
+    Route::get("/{id}", [CarsController::class, "show"]);
+    Route::post("/add", [CarsController::class, "store"]);
 });

@@ -6,6 +6,7 @@ use App\Dto\FilterDto;
 use Illuminate\Http\Request;
 use App\Models\Cars;
 use App\Dto\QueryFilterDto;
+use App\Dto\CarsDto;
 
 class CarsController extends Controller
 {
@@ -51,15 +52,34 @@ class CarsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'id' => 'numeric',
+            'name' => 'required|string|max:255',
+            'origin' => 'required|string|max:255',
+            'model_year' => 'required|numeric',
+            'acceleration' => 'numeric',
+            'horsepower' => 'numeric',
+            'mpg' => 'numeric',
+            'weight' => 'numeric',
+            'cylinders' => 'numeric',
+            'displacement' => 'numeric',
+        ]);
+
+        $carDto = (new CarsDto($validated))->toArray();
+        $car = Cars::where("name",$carDto['name'])->where("origin",$carDto['origin'])->where("model_year",$carDto['model_year'])->get();
+        if(count($car))
+            return response()->json($car);
+
+        $car = Cars::create($carDto);
+        return response()->json($car);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(int $id)
     {
-        //
+        return response()->json(Cars::find($id));
     }
 
     /**
