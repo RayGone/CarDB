@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CarsController;
 use App\Http\Requests\CreateUserRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -19,8 +20,12 @@ use Laravel\Sanctum\PersonalAccessToken;
 |
 */
 
-Route::group([], function(){
-    Route::post("/user/create", function(CreateUserRequest $request){
+Route::match(['GET',"POST"], "/", function(){
+    return response()->json(["message"=>"CarDB Laravel API"]);
+});
+
+Route::group(['prefix'=>"user"], function(){
+    Route::post("/create", function(CreateUserRequest $request){
         $valid_data = $request->validated();
         $user = User::create([
             "name" => $valid_data['name'],
@@ -51,15 +56,17 @@ Route::group([], function(){
         $token = $user->createToken('Access Token')->plainTextToken;
 
         return response()->json(["user"=> $user, "auth_token"=>$token]);
-
     });
-});
 
-Route::group(['auth:sanctum'], function(){
-    Route::get('/user', function (Request $request) {
+    Route::middleware("auth_sanctun")->get('/', function (Request $request) {
         // Some how $request->user() && Auth::user() are returning empty;
         $pas = PersonalAccessToken::findToken($request->bearerToken());
         $user = $pas->tokenable;
         return response()->json($user->toArray());
     });
+});
+
+Route::group(['prefix'=>"cars", "middleware"=>['auth:sanctum']], function(){
+    Route::get("/", [CarsController::class, "index"]);
+    Route::post("/filterSearch", [CarsController::class, "index"]);
 });
