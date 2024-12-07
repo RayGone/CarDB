@@ -20,6 +20,7 @@ CarDB is a web application designed to demonstrate the integration of popular fr
 - **[C#.NET](./API/CarDB-CSharp) API:** A backend API using C#.NET.
 - **[FastAPI](./API/CarDB-Python-FastAPI):** A Python API using FastAPI.
 - **[Symfony](./API/PHP-Symfony):** A PHP API using Symfony Library.
+- **[Laravel](./API/PHP-Laravel):** A PHP API using Laravel Framework with Sanctum based Auth Implemented.
 
 ## Setup
 
@@ -45,7 +46,7 @@ To run this project locally, follow these steps:
     #----
     fastapi run index.py
     #-----
-    # run the php server inside public directory
+    # run the php server inside public directory (for both Laravel and Symfony)
     php -S localhost:8000
 
 3. **Choose UI** [Angular](./UI/CarDB-Angular) or [React](./UI/CarDB-React)
