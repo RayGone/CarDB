@@ -39,13 +39,20 @@ class CarsController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
+     * Fetch Data using Get or Post
      */
     public function index(Request $request)
     {
         $filter = new QueryFilterDto($request->all());
         $data = $this->queryData($filter);
         return response()->json($data);
+    }
+
+    /**
+     * Download File
+     */
+    public function download(string $type){
+        return response()->json([$type]);
     }
 
     /**
@@ -110,9 +117,9 @@ class CarsController extends Controller
         }
 
         unset($carDto['id']);
-
         $car->fill($carDto);
         $car->save();
+        // or Cars::where("id",$id)->update($carDto);
 
         return response()->json($car);
     }
@@ -122,6 +129,9 @@ class CarsController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $car = Cars::find($id);
+        //or Cars::destroy($id);
+        $car->delete();
+        return response()->json(["deleted"=>$car, "status"=>"success"]);
     }
 }
