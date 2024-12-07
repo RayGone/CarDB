@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\PersonalAccessToken;
+use Illuminate\Routing\Middleware\ThrottleRequests;
 
 /*
 |--------------------------------------------------------------------------
@@ -72,5 +73,6 @@ Route::group(['prefix'=>"cars", "middleware"=>['auth:sanctum']], function(){
     Route::get("/{id}", [CarsController::class, "show"])->name("Get Cary By Id");
     Route::post("/add", [CarsController::class, "store"])->name("Add a new Car");
     Route::patch("/edit/{id}", [CarsController::class, "update"])->name("Edit Car");
-    Route::delete("/delete/{id}", [CarsController::class, "destroy"])->name("Edit Car");
+    Route::delete("/delete/{id}", [CarsController::class, "destroy"])->name("Delete Car");
+    Route::match(["GET", "POST"],"/download/{type}", [CarsController::class, "download"])->name("Download Cars")->middleware(ThrottleRequests::with(5,2));
 })->namespace("Cars");

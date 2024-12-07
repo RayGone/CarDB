@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Cars;
 use App\Dto\QueryFilterDto;
 use App\Dto\CarsDto;
+use App\Exports\CarsExport;
+use Maatwebsite\Excel\Facades\Excel;
 use RuntimeException;
 
 class CarsController extends Controller
@@ -51,8 +53,27 @@ class CarsController extends Controller
     /**
      * Download File
      */
-    public function download(string $type){
-        return response()->json([$type]);
+    public function download(?string $type){
+        $accept = ['csv', 'json'];
+        $fname = "cars.".$type;
+        if(in_array($type, $accept)){
+            $cars = Cars::all();
+            $content = "";
+            $content_type = "";
+
+            if($type == "csv"){
+                return Excel::download(new CarsExport, $fname);
+            }else{
+                $content = json_encode($cars);
+                $content_type = "application/json";
+                return response()->streamDownload(function () use ($content) {
+                    echo $content;
+                }, $fname, ['Content-Type'=>$content_type]);
+            }
+
+        }else{
+            throw new RuntimeException("Unrecognized / Unacceptable File Type!!");
+        }
     }
 
     /**
