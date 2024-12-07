@@ -72,4 +72,5 @@ Route::group(['prefix'=>"cars", "middleware"=>['auth:sanctum']], function(){
     Route::get("/{id}", [CarsController::class, "show"])->name("Get Cary By Id");
     Route::post("/add", [CarsController::class, "store"])->name("Add a new Car");
     Route::patch("/edit/{id}", [CarsController::class, "update"])->name("Edit Car");
+    Route::delete("/delete/{id}", [CarsController::class, "destroy"])->name("Edit Car");
 })->namespace("Cars");
