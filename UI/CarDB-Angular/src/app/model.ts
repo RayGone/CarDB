@@ -1,3 +1,5 @@
+import { environment as env } from "../environments/environment";
+
 export interface Car {
   id: number;
   name: string;
@@ -16,7 +18,7 @@ export interface CarResponse {
   total: number;
 }
 
-export const baseUrl = "http://localhost:3000/api";
+export const baseUrl = env.apiUrl;
 
 export const columnDef = [
   {

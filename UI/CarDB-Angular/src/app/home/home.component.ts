@@ -173,7 +173,11 @@ export class HomeComponent implements OnInit, AfterViewInit {
   }
 
   fetch(): void {
-    this.http.post<CarResponse>(this.filterUrl, this.filterModel).subscribe(data => {
+    this.http.post<CarResponse>(this.filterUrl, this.filterModel, {
+      headers: {
+        accept: "application/json"
+      }
+    }).subscribe(data => {
       if(data.total < (this.pageSize * (this.page - 1))){
         this.page = 0;
         this.filterModel.page = 0;
