@@ -1,0 +1,20 @@
+## Note: It is more easier to deploy app from the build rather than making build on the deployment
+### Copy app.yaml and .gcloudignore to dist/<app>/browser after build before gcloud deploy
+####### Then run > gcloud app deploy
+
+runtime: nodejs20
+instance_class: F1 # (Optional) Defines the instance type; F1 is the smallest and cheapest
+
+env_variables:
+  NODE_ENV: production # Ensures the app runs in production mode
+
+handlers:
+  # Serve static files like HTML, CSS, and JS
+  - url: /
+    static_files: index.html
+    upload: index.html
+
+  - url: /(.*)
+    static_files: \1
+    upload: (.*)
+
