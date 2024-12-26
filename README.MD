@@ -20,7 +20,7 @@ CarDB is a web application designed to demonstrate the integration of popular fr
 - **[C#.NET](./API/CarDB-CSharp) API:** A backend API using C#.NET.
 - **[FastAPI](./API/CarDB-Python-FastAPI):** A Python API using FastAPI.
 - **[Symfony](./API/PHP-Symfony):** A PHP API using Symfony Library.
-- **[Laravel](./API/PHP-Laravel):** A PHP API using Laravel Framework with Sanctum based Auth Implemented.
+- **[Laravel](./API/PHP-Laravel):** A PHP API using Laravel Framework with Sanctum based Auth Implemented. A full-stack web app with React front-end can be found on github [CarDB-Laravel](https://github.com/RayGone/CarDB-Laravel)
 
 ## Setup
 
@@ -52,3 +52,17 @@ To run this project locally, follow these steps:
 3. **Choose UI** [Angular](./UI/CarDB-Angular) or [React](./UI/CarDB-React)
     ```sh
     npm start
+
+## Demo
+
+### Symfony with React
+You can check the demo at this URL: [react-cardb.sushmaregan.com](https://react-cardb.sushmaregan.com)
+> Hosted on CPanel.
+
+### Laravel with React
+You can check the demo at this URL: [laracar.sushmaregan.com](https://laracar.sushmaregan.com)
+> Hosted on Google Cloud Compute VM.
+
+> Don't want to register? use this credentials <br>
+- Email: demo@noemail.com<br>
+- Pass: P@55word
