@@ -22,7 +22,7 @@ class CarsEntity
     private string $origin;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private int $modelYear;
+    private \DateTime $modelYear;
 
     #[ORM\Column(type: Types::FLOAT, nullable: true)]
     private ?float $acceleration;
@@ -79,12 +79,12 @@ class CarsEntity
         return $this;
     }
 
-    public function getModelYear(): ?int
+    public function getModelYear(): ?\DateTime
     {
         return $this->modelYear;
     }
 
-    public function setModelYear(int $modelYear): self
+    public function setModelYear(\DateTime $modelYear): self
     {
         $this->modelYear = $modelYear;
 
@@ -174,13 +174,13 @@ class CarsEntity
     } 
     
     #[ORM\PrePersist]
-    public function setCreatedAtValue(): void {
-        $this->createdAt = new \DateTime(); 
+    public function setCreatedAt(): void {
+        $this->createdAt = new \DateTimeImmutable(); 
     } 
 
     #[ORM\PrePersist]
     #[ORM\PreUpdate]
-    public function setUpdatedAtValue(): void 
+    public function setUpdatedAt(): void 
     { 
         $this->updatedAt = new \DateTime();
     }
