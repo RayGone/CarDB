@@ -1,7 +1,7 @@
 require('dotenv').config()
 const express = require('express');
 const cors = require('cors');
-const routes = require("./router.js");
+const routes = require("./CarsRouter.js");
 
 const PORT = process.env.PORT || 3000;
 const app = express();
@@ -18,7 +18,7 @@ if(process.env.USE_API === "firestore"){
 app.use(cors());
 app.use(express.json());
 
-app.use("/api/", routes);
+app.use("/api/cars/", routes);
 
 const { swaggerDocs } = require("./swagger");
 
