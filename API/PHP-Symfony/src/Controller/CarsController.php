@@ -17,7 +17,7 @@ use Doctrine\DBAL\Connection;
 use App\Dto;
 use RuntimeException;
 
-#[Route('/cars', name: 'Cars API - ')]
+#[Route('/api/cars', name: 'Cars API - ')]
 class CarsController extends AbstractController
 {
     #[Route('', name: 'Get Cars')]
