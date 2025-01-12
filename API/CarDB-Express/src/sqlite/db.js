@@ -7,7 +7,7 @@ const getDBInstance = () => {
 
 const insertCar = (carObj, callback=(e, r)=>{}) => {
     const db = getDBInstance();
-    const sql = `INSERT INTO ${process.env.SQLITE_TABLE_NAME} (${Object.keys(carObj).join(", ")}) VALUES (?,?,?,?,?,?,?,?,?)`;
+    const sql = `INSERT INTO ${process.env.DB_NAME} (${Object.keys(carObj).join(", ")}) VALUES (?,?,?,?,?,?,?,?,?)`;
 
     const values = Object.values(carObj).map((v)=> v=='' ? null : v);
     
@@ -31,7 +31,7 @@ const getLastRowId = (callback=(e, rowId)) => {
 
 const updateCar = (carObj, callback=(e)=>{}) => {
     const db = getDBInstance();
-    let sql = `UPDATE ${process.env.SQLITE_TABLE_NAME} SET `;
+    let sql = `UPDATE ${process.env.DB_NAME} SET `;
     const keys = Object.keys(carObj);
     const values = Object.values(carObj).splice(1);
     values.push(carObj['id']);
@@ -47,7 +47,7 @@ const updateCar = (carObj, callback=(e)=>{}) => {
 
 const removeCar = (carId, callback=(e)=>{})=>{
     const db = getDBInstance();
-    const sql = `DELETE FROM ${process.env.SQLITE_TABLE_NAME} WHERE id=?`;
+    const sql = `DELETE FROM ${process.env.DB_NAME} WHERE id=?`;
     db.serialize(() => db.run(sql, carId, callback));
 }
 
@@ -56,7 +56,7 @@ const initDB = () => {
     const db = getDBInstance();
     db.serialize(() => {
         console.log("-- Creating Table");
-        let sql = `CREATE TABLE IF NOT EXISTS ${process.env.SQLITE_TABLE_NAME}(
+        let sql = `CREATE TABLE IF NOT EXISTS ${process.env.DB_NAME}(
                 id INTEGER PRIMARY KEY, name TEXT NOT NULL, origin TEXT NOT NULL, 
                 model_year INTEGER NOT NULL, cylinders INTEGER, mpg REAL, 
                 horsepower REAL, weight REAL, acceleration REAL, displacement REAL
@@ -64,12 +64,12 @@ const initDB = () => {
             STRICT`;
         db.run(sql, [], (err)=>{
             sql = "SELECT count(*) FROM ?";
-            db.each(sql, process.env.SQLITE_TABLE_NAME, (err, row) => {
+            db.each(sql, process.env.DB_NAME, (err, row) => {
                 if(row != null) {                
                     console.log("-- Empty Table; Filling with Initial Data");
                     const init_data = require("../data.json");
     
-                    sql = `INSERT INTO ${process.env.SQLITE_TABLE_NAME} (${Object.keys(init_data[0]).join(", ")}) VALUES (?,?,?,?,?,?,?,?,?,?)`;
+                    sql = `INSERT INTO ${process.env.DB_NAME} (${Object.keys(init_data[0]).join(", ")}) VALUES (?,?,?,?,?,?,?,?,?,?)`;
                     
                     for(let row of init_data){
                        insertCar(row,(err)=>{
@@ -89,7 +89,7 @@ const initDB = () => {
 
 function queryCar(filterModel, callback=(e,r)=>{}){
     const db = getDBInstance();
-    let sql = `SELECT * FROM ${process.env.SQLITE_TABLE_NAME}`;
+    let sql = `SELECT * FROM ${process.env.DB_NAME}`;
 
     if(filterModel?.all){
         db.serialize(()=>{
@@ -142,7 +142,7 @@ function queryCar(filterModel, callback=(e,r)=>{}){
             if(e!=null) console.log("Query Error:", e);
             if(cars==null) callback({}, {cars: [], total: 0});
             else{
-                sql = "SELECT count(*) as total FROM "+process.env.SQLITE_TABLE_NAME+conditions;
+                sql = "SELECT count(*) as total FROM "+process.env.DB_NAME+conditions;
                 db.serialize(()=>{
                     db.get(sql, [], (err, count) =>{
                         if(err==null && count!=null){

@@ -1,5 +1,5 @@
 const express = require("express");
-const router = express.Router();
+const router = express.Router('cars');
 
 const controller_path = `./${process.env.USE_API}/controller`;
 const controller = require(controller_path);
