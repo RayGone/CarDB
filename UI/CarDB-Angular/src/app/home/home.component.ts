@@ -51,6 +51,14 @@ export class HomeComponent implements OnInit, AfterViewInit {
     this.dataSource.sort = sort;
   }
 
+  constructor(private http: HttpClient,
+    public dialogRef: MatDialog,
+    public snackBar: MatSnackBar
+  ) {
+    this.dataSource.data = this.data;
+    // this.fetchDataCount();
+  }
+
   sortEventHandler(event: Sort): void {
     // No Changes
     if(event.direction === this.filterModel.order && event.active === this.filterModel.orderBy) return;
@@ -64,17 +72,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
       this.filterModel.order = event.direction;
       this.filterModel.orderBy = event.active;
     }
-
     this.trackFilters(this.filterModel);
     this.fetch();
-  }
-
-  constructor(private http: HttpClient,
-    public dialogRef: MatDialog,
-    public snackBar: MatSnackBar
-  ) {
-    this.dataSource.data = this.data;
-    // this.fetchDataCount();
   }
 
   ngOnInit(): void {
@@ -174,6 +173,17 @@ export class HomeComponent implements OnInit, AfterViewInit {
   // }
 
   fetch(): void {
+    if(env.backend=='firestore' && this.filterModel.filter.length>0 && !['id', 'name', 'origin'].some((col) => col == this.filterModel.orderBy)){
+      this.filterModel.orderBy = "id";
+      const flag = parseInt(localStorage.getItem("notification:filter-sort-not-allowed") ?? '0')
+      if(flag < 5){
+        this.snackBar.open("With filter set, server side sorting is allowed only with [ID, Car Name, Origin].\nPage wise sorting performed.", "Close",
+          {duration: 5000, horizontalPosition: 'center', verticalPosition:'top'});
+
+        localStorage.setItem("notification:filter-sort-not-allowed", (flag+1).toString())
+      }
+    }
+
     this.http.post<CarResponse>(carEndPoints.get, this.filterModel, {
       headers: {
         accept: "application/json"
