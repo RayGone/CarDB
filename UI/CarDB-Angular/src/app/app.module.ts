@@ -24,6 +24,7 @@ import { FilterDialogComponent } from './home/filter-dialog/filter-dialog.compon
 import { MatSelectModule } from '@angular/material/select';
 import { OpNamePipe } from './op-name/op-name.pipe';
 import { FilterListComponent } from './home/filter-list/filter-list.component';
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 
 @NgModule({
@@ -51,6 +52,7 @@ import { FilterListComponent } from './home/filter-list/filter-list.component';
     MatDialogModule,
     MatCardModule,
     MatSelectModule,
+    MatTooltipModule,
   ],
   providers: [
     provideClientHydration(),
