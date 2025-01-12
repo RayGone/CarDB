@@ -10,6 +10,8 @@ import { AddCarDialogComponent } from './add-car-dialog/add-car-dialog.component
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { EditCarDialogComponent } from './edit-car-dialog/edit-car-dialog.component';
 import { FilterDialogComponent } from './filter-dialog/filter-dialog.component';
+import { carEndPoints } from '../endpoints';
+import { environment as env } from '../../environments/environment';
 
 @Component({
   selector: 'app-home',
@@ -17,8 +19,9 @@ import { FilterDialogComponent } from './filter-dialog/filter-dialog.component';
   styleUrl: './home.component.scss'
 })
 export class HomeComponent implements OnInit, AfterViewInit {
+  readonly downloadUrl = carEndPoints.download;
   // Pagination
-  readonly pageSizes = [20, 50, 100];
+  readonly pageSizes = [10, 20, 50, 100];
   public total: number = 0;
   public page: number = 0;
   public pageSize: number = 20;
@@ -43,14 +46,17 @@ export class HomeComponent implements OnInit, AfterViewInit {
     page: 0
   };
 
-  public readonly filterUrl = baseUrl + "/filterSearch";
-  public readonly downloadUrl = baseUrl + "/download/csv";
-  public readonly totalCountUrl = baseUrl + "/total";
-  public readonly deleteUrl = baseUrl + "/delete";
-
   @ViewChild(MatSort)
   public set matSort(sort: MatSort) {
     this.dataSource.sort = sort;
+  }
+
+  constructor(private http: HttpClient,
+    public dialogRef: MatDialog,
+    public snackBar: MatSnackBar
+  ) {
+    this.dataSource.data = this.data;
+    // this.fetchDataCount();
   }
 
   sortEventHandler(event: Sort): void {
@@ -66,17 +72,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
       this.filterModel.order = event.direction;
       this.filterModel.orderBy = event.active;
     }
-
     this.trackFilters(this.filterModel);
     this.fetch();
-  }
-
-  constructor(private http: HttpClient,
-    public dialogRef: MatDialog,
-    public snackBar: MatSnackBar
-  ) {
-    this.dataSource.data = this.data;
-    this.fetchDataCount();
   }
 
   ngOnInit(): void {
@@ -84,7 +81,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
       this.page = this.filterModel.page;
       this.pageSize = this.filterModel.limit;
 
-      this.searchControl.valueChanges.pipe(sampleTime(200)).subscribe((value: string) => {
+      this.searchControl.valueChanges.pipe(sampleTime(1000)).subscribe((value: string) => {
         //Local Search
         if(value == "") this.dataSource.data = this.data;
         let search_string = value.toLowerCase();
@@ -93,7 +90,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
         this.dataSource.data = filtered
 
         this.trackFilters(this.filterModel);
-        this.fetch();
+        if(env.backend != 'firestore') // if backend is firestore do no use server side pattern match search
+          this.fetch();
       });
 
       if(this.filterModel.search != "") this.searchControl.setValue(this.filterModel.search);
@@ -114,6 +112,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
     FilterDialogComponent.onFilterAdd.pipe(take(1)).subscribe((filter: FilterModel) => {
       this.filterModel.filter.push(filter);
+      if(env.backend == 'firestore')
+        this.filterModel.filter = [filter];
       this.page = 0;
       this.filterModel.page = 0;
       this.trackFilters(this.filterModel);
@@ -166,14 +166,25 @@ export class HomeComponent implements OnInit, AfterViewInit {
   // Data Fetches================
   //============================
 
-  fetchDataCount():void{
-    this.http.get(this.totalCountUrl).subscribe((data: any) => {
-      this.total = data.total;
-    });
-  }
+  // fetchDataCount():void{
+  //   this.http.get(carEndPoints.total).subscribe((data: any) => {
+  //     this.total = data.total;
+  //   });
+  // }
 
   fetch(): void {
-    this.http.post<CarResponse>(this.filterUrl, this.filterModel, {
+    if(env.backend=='firestore' && this.filterModel.filter.length>0 && !['id', 'name', 'origin'].some((col) => col == this.filterModel.orderBy)){
+      this.filterModel.orderBy = "id";
+      const flag = parseInt(localStorage.getItem("notification:filter-sort-not-allowed") ?? '0')
+      if(flag < 5){
+        this.snackBar.open("With filter set, server side sorting is allowed only with [ID, Car Name, Origin].\nPage wise sorting performed.", "Close",
+          {duration: 5000, horizontalPosition: 'center', verticalPosition:'top'});
+
+        localStorage.setItem("notification:filter-sort-not-allowed", (flag+1).toString())
+      }
+    }
+
+    this.http.post<CarResponse>(carEndPoints.get, this.filterModel, {
       headers: {
         accept: "application/json"
       }
@@ -219,7 +230,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
   public deleteCar(car: Car): void {
     let name = car.name.toUpperCase()
     this.snackBar.open("Deleting Car "+ name + ".", "Close", {duration: 2000});
-    this.http.delete(this.deleteUrl + "/" + car.id).subscribe((data: any) => {
+    this.http.delete(carEndPoints.delete + "/" + car.id).subscribe((data: any) => {
       this.snackBar.open(name + " Car Deleted!!", "Close", {duration: 2000});
       this.fetch();
     });

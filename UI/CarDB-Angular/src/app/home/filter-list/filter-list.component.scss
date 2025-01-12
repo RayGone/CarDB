@@ -1,0 +1,26 @@
+
+.filter-body{
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  margin-top: 5px;
+}
+
+.filter-desc{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 1px 1px 5px #ccc;
+  padding: 5px;
+  margin: 2px;
+  width: 70%
+}
+
+.filter-desc > b{
+  font-weight: lighter;
+}
+
+.filter-desc > strong{
+  font-size: 1.5em;
+}

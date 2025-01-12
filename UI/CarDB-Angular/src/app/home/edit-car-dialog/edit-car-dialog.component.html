@@ -7,7 +7,7 @@
     <form class="form" [formGroup]="editForm">
       @for(col of property; track col.key){
         @if(col.key !== "id"){
-          <mat-form-field class="input" appearance="outline">
+          <mat-form-field class="input" appearance="fill">
             <mat-label>{{col.header}}</mat-label>
             <input matInput placeholder={{col.header}} type={{col.type}} formControlName={{col.key}} />
           </mat-form-field>

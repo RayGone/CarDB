@@ -5,6 +5,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Car, columnDef } from '../../model';
 import { Subject } from 'rxjs';
+import { carEndPoints } from '../../endpoints';
 
 @Component({
   selector: 'app-add-car-dialog',
@@ -41,7 +42,7 @@ export class AddCarDialogComponent {
     this.snackBar.open("Adding Car...", "Close", {duration: 2000});
 
     const body: Car = this.addForm.getRawValue();
-    this.http.post("http://localhost:3000/api/add", body).subscribe((data: any) => {
+    this.http.post(carEndPoints.add, body).subscribe((data: any) => {
       this.snackBar.open(body.name.toUpperCase() + " Car Added Successfully!!", "Close", {duration: 2000});
       this.dialogRef.close();
 
