@@ -13,7 +13,6 @@ const close = () => {
   console.log('Gracefully stopping...')
   server.close(async () => {
     console.log(`API Server closed`)
-    await databaseHelper.close(true)
     console.log('Database connection closed')
     process.exit(0)
   })
