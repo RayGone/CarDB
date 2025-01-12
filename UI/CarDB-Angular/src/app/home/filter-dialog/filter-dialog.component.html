@@ -12,14 +12,14 @@
         </mat-select>
       </mat-form-field>
 
-      <mat-form-field class="input" appearance="outline" *ngIf="attrSelected">
+      <mat-form-field class="input" appearance="fill" *ngIf="attrSelected">
         <mat-label>Select Operator</mat-label>
         <mat-select formControlName="ops">
           <mat-option *ngFor="let op of opDef" [value]="op.key">{{ op.value| titlecase}}</mat-option>
         </mat-select>
       </mat-form-field>
 
-      <mat-form-field class="input" appearance="outline" *ngIf="attrSelected && opSelected">
+      <mat-form-field class="input" appearance="fill" *ngIf="attrSelected && opSelected">
         <mat-label>Select Attribute</mat-label>
         <input matInput formControlName="value" type="number" placeholder="Value" />
       </mat-form-field>
