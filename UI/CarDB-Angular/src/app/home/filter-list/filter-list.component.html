@@ -1,0 +1,16 @@
+<h2 class="flex flex-row justify-between">Filters <button mat-raised-button (click)="addFilter()"><mat-icon>add</mat-icon> Add</button></h2>
+<hr>
+<div class="filter-body">
+  <ng-container *ngFor="let f of filter;">
+    <div class="flex flex-row justify-between items-center">
+      <div class="filter-desc">
+        <strong style="margin-top: 10px">{{ f.field | titlecase}}</strong><br>
+        <b>{{ f.ops | opName}}</b><br>
+        <span>{{ f.value }}</span>
+      </div>
+      <button mat-icon-button color="warn" (click)="deleteFilter(f)">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+  </ng-container>
+</div>
