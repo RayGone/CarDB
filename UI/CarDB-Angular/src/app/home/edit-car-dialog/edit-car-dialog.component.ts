@@ -4,7 +4,8 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject } from 'rxjs';
-import { Car, baseUrl, columnDef } from '../../model';
+import { Car, columnDef } from '../../model';
+import { carEndPoints } from '../../endpoints';
 
 @Component({
   selector: 'app-edit-car-dialog',
@@ -53,7 +54,9 @@ export class EditCarDialogComponent {
 
     let name = this.data.name.toUpperCase();
     this.snackBar.open("Updating Car "+ name + ".", "Close", {duration: 2000});
-    this.http.patch(baseUrl + "/edit/" + this.data.id, body).subscribe((data: any) => {
+
+    const url = carEndPoints.edit.replace("{id}", this.data.id.toString());
+    this.http.patch(url, body).subscribe((data: any) => {
       this.snackBar.open(name + " Car Updated Successfully!!", "Close", {duration: 2000});
       this.dialogRef.close();
 
