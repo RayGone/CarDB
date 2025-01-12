@@ -2,8 +2,9 @@ const { initializeApp, cert } = require('firebase-admin/app');
 const { getFirestore } = require('firebase-admin/firestore');
 const serviceAccount = require("../../"+process.env.FIREBASE_SERVICE_ACCOUNT_KEY_PATH);
 const data = require('../../'+process.env.DB_INIT_DATA_PATH);
+const fs = require("fs");
 
-const collectionName = process.env.FIREBASE_DB_COLLECTION_NAME;
+const collectionName = process.env.DB_NAME;
 
 // initializeApp({
 //     credential: applicationDefault(),
@@ -46,6 +47,40 @@ async function initData(){
         await batch.commit();
         console.log("Data initialized successfully!");
     }
+
+    fs.readFile('./originIndex.json', 'utf8', (err, content) => { 
+        if (err) { 
+            console.error('Error reading file:', err); 
+            return; 
+        } 
+
+        const originIndex = JSON.parse(content);
+        if(originIndex.length == 0){
+            let nI = []
+            let oI = []
+            data.forEach(car => {
+                nI.push(car.name)
+                if(!oI.some((origin) => origin == car.origin))
+                    oI.push(car.origin)
+            });
+    
+            fs.writeFile('./nameIndex.json', JSON.stringify(nI), (err) => { 
+                if (err) { 
+                    console.error('Error writing name index to file:', err); 
+                } else { 
+                    console.log('File has been written successfully.'); 
+                } 
+            });
+    
+            fs.writeFile('./originIndex.json', JSON.stringify(oI), (err) => { 
+                if (err) { 
+                    console.error('Error writing origin index to file:', err); 
+                } else { 
+                    console.log('File has been written successfully.'); 
+                } 
+            });
+        }
+    });
 
     return snapshot;
 }

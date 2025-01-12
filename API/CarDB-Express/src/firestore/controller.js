@@ -57,74 +57,67 @@ getCars = (req, res) => {
     //---
     if(req.body.filter) filters = req.body.filter;
 
+    /**
+     * 
+     */
+    if(process.env.FIRESTORE_API_USE_LOCAL_DB == true){
+        if(local_db.length == 0){    
+            let query = collection.orderBy(orderBy, order)       
+            query.get().then(snapshot => {
+                total = parseInt(snapshot.size);
+                let cars = [];
+                snapshot.forEach(doc => {
+                    data = doc.data();
+                    cars.push(data);
+                });
 
-    //===================
-    // Approach 3 ==> Local Cache of the DB
-    //=== Requires Fetching All the data from Firestore Once ===
-    if(local_db.length>0){
-        cars = [...local_db];
+                local_db = [...cars];            
 
-        // --sorting;
-        cars.sort((carA, carB) => {
-            if(carA[orderBy] === carB[orderBy]) return 0;
-            const cond = order === "asc" ? carA[orderBy] > carB[orderBy] : carA[orderBy] < carB[orderBy];
-            return cond ? 1 : -1;
-        });
+                //===================
+                // Approach 2 ==> Instead Using JS Filter
+                //=== Requires Fetching All the data from Firestore ===
+                //===== Unneccessary Read of whole collecton ===========
+                // --searching;
+                if(search != ""){
+                    cars = cars.filter((car) => {
+                        const name = car.name ? (car.name + "").toLowerCase() : "";
+                        const origin = car.origin ? (car.origin + "").toLowerCase() : "";
+                        return (name.includes(search) || origin.includes(search))
+                    });
+                }
 
-        // --searching;
-        if(search != ""){
-            cars = cars.filter((car) => {
-                const name = car.name ? (car.name + "").toLowerCase() : "";
-                const origin = car.origin ? (car.origin + "").toLowerCase() : "";
-                return (name.includes(search) || origin.includes(search))
+                // --filtering;
+                if(filters.length > 0){
+                    cars = cars.filter(car => filters.every(filter => checkConditions(car, filter)));
+                }
+                total = cars.length;
+
+                // --limiting;
+                cars = cars.slice(page*limit, (page+1)*limit);
+                //======== Approach 2 End ===========
+                
+                res.json({cars: cars, total: total});
+            })
+            .catch(err => {
+                console.error(err);
+                res.status(500).send("Internal Server Error");
             });
+            return;
         }
 
-        // --filtering;
-        if(filters.length > 0){
-            cars = cars.filter(car => filters.every(filter => checkConditions(car, filter)));
-        }
-        total = cars.length;
-
-        // --limiting;
-        cars = cars.slice(page*limit, (page+1)*limit);
-
-        res.json({cars: cars, total: total});
-        return;
-    }
-    //===================
-    // Approach 1 ==> Using where clause
-    //=== Requires Setting Up Indexes in Firestore ===
-    //===== Also Firestore Doesn't Allow Pattern Matching 
-    //      So can't perform global search =================
-    // --sorting;
-    let query = collection.orderBy(orderBy, order)
-    // query = query.limit(50); // Note: Remove when testing is done
-
-    /*
-        filters.forEach(filter => {
-            query = query.where(filter.field, filter.ops, filter.value);
-        });
-
-        query.startAt(page*limit).endAt((page+1)*limit);
-        query = query.limit(limit);
-    */
-
-    query.get()
-        .then(snapshot => {
-            total = parseInt(snapshot.size);
-            let cars = [];
-            snapshot.forEach(doc => {
-                data = doc.data();
-                cars.push(data);
-            });
-
-            local_db = [...cars];            
-
+        else{
             //===================
-            // Approach 2 ==> Instead Using JS Filter
-            //=== Requires Fetching All the data from Firestore ===
-            //===== Unneccessary Read of whole collecton ===========
+            // Approach 3 ==> Local Cache of the DB
+            //=== Requires Fetching All the data from Firestore Once ===
+            cars = [...local_db];
+
+            // --sorting;
+            cars.sort((carA, carB) => {
+                if(carA[orderBy] === carB[orderBy]) return 0;
+                const cond = order === "asc" ? carA[orderBy] > carB[orderBy] : carA[orderBy] < carB[orderBy];
+                return cond ? 1 : -1;
+            });
+    
             // --searching;
             if(search != ""){
                 cars = cars.filter((car) => {
@@ -133,23 +126,48 @@ getCars = (req, res) => {
                     return (name.includes(search) || origin.includes(search))
                 });
             }
-
+    
             // --filtering;
             if(filters.length > 0){
                 cars = cars.filter(car => filters.every(filter => checkConditions(car, filter)));
             }
             total = cars.length;
-
+    
             // --limiting;
             cars = cars.slice(page*limit, (page+1)*limit);
-            //======== Approach 2 End ===========
-            
+    
             res.json({cars: cars, total: total});
-        })
-        .catch(err => {
-            console.error(err);
-            res.status(500).send("Internal Server Error");
+            return;
+        }
+    }
+
+    //===================
+    // Approach 1 ==> Using where clause
+    //=== Requires Setting Up Indexes in Firestore ===
+    //===== Also Firestore Doesn't Allow Pattern Matching 
+    //      So can't perform global search =================
+    // --sorting;
+    let query = collection.orderBy(orderBy, order)
+    // query = query.limit(50); // Note: Remove when testing is done
+    filters.forEach(filter => {
+        query = query.where(filter.field, filter.ops, filter.value);
+    });
+
+    query.get().then(snapshot => {
+        const count = snapshot.size;
+
+        query.startAt(page*limit).endAt((page+1)*limit);
+        query = query.limit(limit);
+
+        query.get().then(snapshot => {
+            let cars = [];
+            snapshot.forEach(doc => {
+                cars.push(doc.data());
+            });
+            res.json({cars: cars, total: count});
+            return;
         });
+    });
 };
 
 /*
