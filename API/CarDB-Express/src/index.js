@@ -12,7 +12,7 @@ let server = app.listen(PORT, () => {
 const close = () => {
   console.log('Gracefully stopping...')
   server.close(async () => {
-    console.log(`HTTP${env.HTTPS ? 'S' : ''} server closed`)
+    console.log(`API Server closed`)
     await databaseHelper.close(true)
     console.log('Database connection closed')
     process.exit(0)
