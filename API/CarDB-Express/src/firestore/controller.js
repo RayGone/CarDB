@@ -147,27 +147,47 @@ getCars = (req, res) => {
     //===== Also Firestore Doesn't Allow Pattern Matching 
     //      So can't perform global search =================
     // --sorting;
-    let query = collection.orderBy(orderBy, order)
+    let query = collection.orderBy('id', order)
+    if(orderBy != 'id') query = query.orderBy(orderBy, order)
     // query = query.limit(50); // Note: Remove when testing is done
     filters.forEach(filter => {
         query = query.where(filter.field, filter.ops, filter.value);
     });
 
-    query.get().then(snapshot => {
-        const count = snapshot.size;
-
-        query.startAt(page*limit).endAt((page+1)*limit);
-        query = query.limit(limit);
-
+    try{
         query.get().then(snapshot => {
-            let cars = [];
-            snapshot.forEach(doc => {
-                cars.push(doc.data());
+            const count = snapshot.size;
+            
+            let pStart = page*limit
+            let pEnd = pStart + limit
+            if(order == 'desc') {
+                pStart = count - pStart
+                pEnd = pStart - limit
+                pEnd = pEnd < 0 ? 0 : pEnd
+            }
+    
+            query = query.startAt(pStart)//.endAt(pEnd);
+            query = query.limit(limit);
+    
+            query.get().then(snapshot => {
+                let cars = [];
+    
+                snapshot.forEach(doc => {
+                    cars.push(doc.data());
+                });
+                res.json({cars: cars, total: count});
+                return;
+            }).catch(e => {
+                res.status(500).send(e)
             });
-            res.json({cars: cars, total: count});
-            return;
+        })
+        .catch(e => {
+            res.status(500).send(e)
         });
-    });
+    }
+    catch(error){
+        res.status(500).send(error)
+    }
 };
 
 /*
