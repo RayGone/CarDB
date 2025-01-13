@@ -10,9 +10,15 @@
             placeholder="Chevrolet"
             type="search"
             [formControl]="searchControl"
+            [matAutocomplete]="auto"
           />
+          <mat-autocomplete #auto="matAutocomplete">
+            @for (o of origin; track o) {
+              <mat-option [value]="o">{{o}}</mat-option>
+            }
+          </mat-autocomplete>
       </mat-form-field>
-      &nbsp;
+      &nbsp;&nbsp;
       <!-- Add Button -->
       <div class="hidden md:block" aria-describedby="Add Car" title="Add Car" matToolTip="Add Car">
         <button mat-raised-button color="primary" (click)="openAddCarDialog()">Add Car <mat-icon>add</mat-icon></button>
@@ -107,6 +113,7 @@
       [pageSize]="pageSize"
       [length]="total"
       [pageIndex]="page"
+      [showFirstLastButtons]="true"
       (page)="onPageChange($event)"></mat-paginator>
   </footer>
 </div>

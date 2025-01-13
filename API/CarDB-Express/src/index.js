@@ -13,9 +13,8 @@ const close = () => {
   console.log('Gracefully stopping...')
   server.close(async () => {
     console.log(`API Server closed`)
-    console.log('Database connection closed')
     process.exit(0)
-  })
-}
+  });
+};
 
 ['SIGINT', 'SIGTERM', 'SIGQUIT'].forEach((signal) => process.on(signal, close))
