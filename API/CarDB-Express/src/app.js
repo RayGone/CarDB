@@ -7,10 +7,12 @@ const helmet = require('helmet');
 const app = express();
 
 if(process.env.USE_API === "firestore"){
+    console.log("Setting Up Firestore");
     const {connect, initData} = require("./firestore/db-init.js");
     connect(); // Initialize Firebase
     initData(); // Initialize data
 }else{
+    console.log("Setting Up SQLite")
     const {initDB} = require("./sqlite/db.js")
     initDB();
 }
@@ -29,10 +31,10 @@ app.use(helmet.originAgentCluster())
 app.use(helmet.crossOriginResourcePolicy({ policy: 'cross-origin' }))
 app.use(helmet.crossOriginOpenerPolicy())
 
-let whitelist = ['http://localhost:4200'];
+let whitelist = JSON.parse(process.env.CORS_WHITELIST);
 
-if(process.env.APP_ENV == 'prod'){
-    whitelist = ['https://angular-app.sushmaregan.com']
+if(process.env.APP_ENV == 'dev'){
+    whitelist = ['http://localhost:4200']
 }
 
 const corsOptions = { 
