@@ -178,7 +178,11 @@ export class HomeComponent implements OnInit, AfterViewInit {
   // }
 
   fetch(): void {
-    if(env.backend=='firestore' && this.filterModel.filter.length>0 && !['id', 'name', 'origin'].some((col) => col == this.filterModel.orderBy)){
+    if(
+        env.backend=='firestore' &&
+        this.filterModel.filter.length>0 &&
+        !['id', 'name', 'origin'].some((col) => col == this.filterModel.orderBy)
+      ){
       this.filterModel.orderBy = "id";
       const flag = parseInt(localStorage.getItem("notification:filter-sort-not-allowed") ?? '0')
       if(flag < 5){
