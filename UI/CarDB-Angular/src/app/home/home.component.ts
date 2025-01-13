@@ -46,6 +46,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
     page: 0
   };
 
+  public origin: string[] = ["USA", "JAPAN", "EUROPE"];
+
   @ViewChild(MatSort)
   public set matSort(sort: MatSort) {
     this.dataSource.sort = sort;
@@ -81,7 +83,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
       this.page = this.filterModel.page;
       this.pageSize = this.filterModel.limit;
 
-      this.searchControl.valueChanges.pipe(sampleTime(1000)).subscribe((value: string) => {
+      this.searchControl.valueChanges.pipe(sampleTime(200)).subscribe((value: string) => {
         //Local Search
         if(value == "") this.dataSource.data = this.data;
         let search_string = value.toLowerCase();
@@ -100,8 +102,11 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
       const savedSort = this.getSavedSort();
-      console.log({savedSort});
-      if(this.dataSource.sort) this.dataSource.sort.sort(savedSort);
+      // console.log({savedSort});
+      setTimeout((source: MatTableDataSource<Car>) => {
+        if(source && source.sort)
+          source.sort.sort(savedSort);
+      }, 1000, this.dataSource);
   }
 
   public addFilter(): void {
@@ -196,10 +201,18 @@ export class HomeComponent implements OnInit, AfterViewInit {
         return;
       }
       this.data = data.cars;
+      this.data.forEach(car => {
+        const origin = car.origin.toUpperCase();
+        if(!this.origin.some((defOrigin) => defOrigin === origin)){
+          this.origin.push(origin);
+        }
+      });
       this.dataSource.data = data.cars;
 
       this.total = data.total;
     });
+
+    this.filterModel = this.getSavedFilters();
   }
 
 
