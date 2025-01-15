@@ -212,8 +212,13 @@ export class HomeComponent implements OnInit, AfterViewInit {
         }
       });
       this.dataSource.data = data.cars;
-
       this.total = data.total;
+
+      if(env.backend == 'firestore'){
+        const search_string = this.filterModel.search
+        let filtered = this.data.filter((row) => row.name.toLowerCase().includes(search_string) || row.origin.toLowerCase().includes(search_string));
+        this.dataSource.data = filtered
+      }
     });
 
     this.filterModel = this.getSavedFilters();
