@@ -20,6 +20,7 @@ import { environment as env } from '../../environments/environment';
 })
 export class HomeComponent implements OnInit, AfterViewInit {
   readonly downloadUrl = carEndPoints.download;
+  public isFetching:boolean = false;
   // Pagination
   readonly pageSizes = [10, 20, 50, 100];
   public total: number = 0;
@@ -192,12 +193,14 @@ export class HomeComponent implements OnInit, AfterViewInit {
         localStorage.setItem("notification:filter-sort-not-allowed", (flag+1).toString())
       }
     }
+    this.isFetching = true;
 
     this.http.post<CarResponse>(carEndPoints.get, this.filterModel, {
       headers: {
         accept: "application/json"
       }
     }).subscribe(data => {
+      this.isFetching = false;
       if(data.total < (this.pageSize * (this.page - 1))){
         this.page = 0;
         this.filterModel.page = 0;
@@ -212,8 +215,13 @@ export class HomeComponent implements OnInit, AfterViewInit {
         }
       });
       this.dataSource.data = data.cars;
-
       this.total = data.total;
+
+      if(env.backend == 'firestore'){
+        const search_string = this.filterModel.search
+        let filtered = this.data.filter((row) => row.name.toLowerCase().includes(search_string) || row.origin.toLowerCase().includes(search_string));
+        this.dataSource.data = filtered
+      }
     });
 
     this.filterModel = this.getSavedFilters();
