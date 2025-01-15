@@ -26,6 +26,7 @@ import { OpNamePipe } from './op-name/op-name.pipe';
 import { FilterListComponent } from './home/filter-list/filter-list.component';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 
 @NgModule({
@@ -55,6 +56,7 @@ import {MatAutocompleteModule} from '@angular/material/autocomplete';
     MatSelectModule,
     MatTooltipModule,
     MatAutocompleteModule,
+    MatProgressSpinnerModule
   ],
   providers: [
     provideClientHydration(),

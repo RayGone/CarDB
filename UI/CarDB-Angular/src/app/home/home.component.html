@@ -47,6 +47,9 @@
 
   <div class="body grid lg:grid-cols-4 grid-rows-2 gap-2">
     <section class="cols-span-3">
+      <span *ngIf="isFetching">
+        <mat-spinner mode="indeterminate" diameter="30"></mat-spinner>
+      </span>
       <table #table mat-table matSort
         [dataSource]="dataSource"
         (matSortChange)="sortEventHandler($event)">
