@@ -69,7 +69,8 @@ table {
 
 th {
   background-color: #f8f9fa;
-  box-shadow: 0 0 10px rgba(45, 48, 71, 0.8);
+  /* box-shadow: 0 0 10px rgba(45, 48, 71, 0.8); */
+  border-right: 1px solid #95a6b822;
   padding: 10px 10px;
   cursor: default;
 }
