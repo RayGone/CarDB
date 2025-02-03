@@ -29,7 +29,7 @@ jobs:
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
         server: ${{ secrets.FTP_SERVER }}
-        dry-run: true
+        dry-run: false
         protocol: ftps
         local-dir: UI/CarDB-React/build/
         server-dir: ${{ secrets.REACT_SERVER_DIR }}
