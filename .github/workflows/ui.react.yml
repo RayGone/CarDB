@@ -31,5 +31,5 @@ jobs:
         server: ${{ secrets.FTP_SERVER }}
         dry-run: true
         protocol: ftps
-        local-dir: UI/CarDB-React/build
+        local-dir: UI/CarDB-React/build/
         server-dir: ${{ secrets.REACT_SERVER_DIR }}
