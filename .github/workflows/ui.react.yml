@@ -3,7 +3,7 @@ on:
     branches:
       - main
     paths:
-      - './UI/CarDB-React/**'
+      - 'UI/CarDB-React/**'
 name: 🚀 Deploy website on push
 jobs:
   web-deploy:
@@ -29,5 +29,5 @@ jobs:
         username: ${{ secrets.FTP_USERNAME }}
         protocol: ftps
         password: ${{ secrets.FTP_PASSWORD }}
-        local_dir: ./UI/CarDB-React/build
+        local_dir: UI/CarDB-React/build
         server_dir: ${{ secrets.REACT_SERVER_DIR }}
