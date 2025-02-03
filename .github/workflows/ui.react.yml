@@ -1,7 +1,7 @@
 on: 
   push:
     branches:
-      - main
+      - test_actions
     paths:
       - 'UI/CarDB-React/**'
 name: 🚀 Deploy website on push
@@ -25,9 +25,10 @@ jobs:
     - name: 📂 Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
-        server: ${{ secrets.FTP_SERVER }}
         username: ${{ secrets.FTP_USERNAME }}
-        protocol: ftps
         password: ${{ secrets.FTP_PASSWORD }}
-        local_dir: UI/CarDB-React/build
-        server_dir: ${{ secrets.REACT_SERVER_DIR }}
+        server: ${{ secrets.FTP_SERVER }}
+        dry-run: true
+        protocol: ftps
+        local-dir: UI/CarDB-React/build
+        server-dir: ${{ secrets.REACT_SERVER_DIR }}
