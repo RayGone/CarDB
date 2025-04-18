@@ -21,6 +21,8 @@ jobs:
       run: |
         npm install
         npm run build
+      env:
+        REACT_APP_API: "https://api-cardb.sushmaregan.com/cars"
     
     - name: 📂 Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -29,5 +31,6 @@ jobs:
         username: ${{ secrets.FTP_USERNAME }}
         protocol: ftps
         password: ${{ secrets.FTP_PASSWORD }}
-        local_dir: UI/CarDB-React/build
-        server_dir: ${{ secrets.REACT_SERVER_DIR }}
+        dry-run: false
+        local-dir: UI/CarDB-React/build/
+        server-dir: ${{ secrets.REACT_SERVER_DIR }}
